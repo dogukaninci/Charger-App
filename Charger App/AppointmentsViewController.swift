@@ -94,6 +94,8 @@ class AppointmentsViewController: UIViewController {
 }
 extension AppointmentsViewController {
     @objc func createButtonTapped() {
+        let selectCityVC = SelectCityViewController()
+        navigationController?.pushViewController(selectCityVC, animated: true)
     }
 }
 extension AppointmentsViewController {
