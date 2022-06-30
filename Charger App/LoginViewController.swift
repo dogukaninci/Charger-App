@@ -178,7 +178,10 @@ extension LoginViewController {
 }
 extension LoginViewController {
     @objc func loginButtonTapped() {
-
+        let appointmentsVC = AppointmentsViewController()
+        let navViewController = UINavigationController(rootViewController: appointmentsVC)
+        navViewController.modalPresentationStyle = .fullScreen
+        present(navViewController, animated: true)
     }
 }
 extension LoginViewController {
