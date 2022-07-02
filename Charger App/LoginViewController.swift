@@ -14,6 +14,8 @@ class LoginViewController: UIViewController {
     private let emailTextField = UITextField()
     private let loginButton = UIButton()
     
+    let loginViewModel = LoginViewModel()
+    
     var constraints: [NSLayoutConstraint] = []
 
     override func viewDidLoad() {
@@ -39,6 +41,9 @@ class LoginViewController: UIViewController {
         view.addSubview(loginButton)
         
         loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
+        
+        // add emailTextField text change listener
+        emailTextField.addTarget(self, action: #selector(eMailTextFieldEditingChange), for: UIControl.Event.editingChanged)
     }
     
     private func style(){
@@ -72,8 +77,9 @@ class LoginViewController: UIViewController {
         loginButton.setTitle("GİRİŞ YAP", for: .normal)
         loginButton.titleLabel?.font = Theme.fontBold(size: 15)
         loginButton.setTitleColor(Theme.colorThird(), for: .normal)
-        loginButton.backgroundColor = Theme.colorMain()
+        loginButton.backgroundColor = Theme.colorAux()
         loginButton.layer.cornerRadius = 20
+        loginButton.isEnabled = false
     }
     
     /// Setups view components constraints
@@ -176,14 +182,7 @@ extension LoginViewController {
         emailTextField.delegate = self
     }
 }
-extension LoginViewController {
-    @objc func loginButtonTapped() {
-        let appointmentsVC = AppointmentsViewController()
-        let navViewController = UINavigationController(rootViewController: appointmentsVC)
-        navViewController.modalPresentationStyle = .fullScreen
-        present(navViewController, animated: true)
-    }
-}
+
 extension LoginViewController {
     private func setNavigationBarItems() {
         let appearance = UINavigationBarAppearance()
@@ -195,7 +194,34 @@ extension LoginViewController {
         navigationController?.navigationBar.compactAppearance = appearance
         navigationController?.navigationBar.isHidden = false
         navigationController?.navigationBar.topItem?.title = "Giriş Yapın"
-
+        
+    }
+}
+extension LoginViewController {
+    @objc func loginButtonTapped() {
+        loginViewModel.fetchToken { [self] isSuccess in
+            if !isSuccess {
+                print("Error fetching access token")
+            }
+            else {
+                let appointmentsVC = AppointmentsViewController()
+                let navViewController = UINavigationController(rootViewController: appointmentsVC)
+                navViewController.modalPresentationStyle = .fullScreen
+                present(navViewController, animated: true)
+            }
+        }
+    }
+}
+extension LoginViewController {
+    // eMailTextField text change handler
+    @objc func eMailTextFieldEditingChange(_ textField: UITextField) {
+        if loginViewModel.saveMail(eMailTextField: textField.text!) {
+            loginButton.isEnabled = true
+            loginButton.backgroundColor = Theme.colorMain()
+        } else {
+            loginButton.isEnabled = false
+            loginButton.backgroundColor = Theme.colorAux()
+        }
     }
 }
 
