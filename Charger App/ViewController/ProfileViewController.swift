@@ -136,7 +136,7 @@ extension ProfileViewController {
 extension ProfileViewController {
     /// Log out proccess
     @objc func logoutButtonTapped() {
-        AuthService.shared.logout { isSuccess in
+        ChargerService.shared.logout { isSuccess in
             if isSuccess {
                 self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
                 print("Logout success")

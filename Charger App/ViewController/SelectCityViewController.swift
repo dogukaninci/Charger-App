@@ -11,7 +11,10 @@ class SelectCityViewController: UIViewController {
     
     private let searchBar = UISearchBar()
     private let tableView = UITableView()
-    private let cityArray = ["Ankara", "Eskişehir"]
+    
+    lazy var selectCityViewModel = {
+         SelectCityViewModel()
+     }()
     
     var constraints: [NSLayoutConstraint] = []
     
@@ -22,6 +25,7 @@ class SelectCityViewController: UIViewController {
         setupConstraints()
         style()
         setNavigationBarItems()
+        initViewModel()
     }
     /// Adds subviews to the AppointmentsViewController view
     private func setup() {
@@ -48,7 +52,7 @@ class SelectCityViewController: UIViewController {
             tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
-            tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 15)
+            tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15)
         ])
         
         NSLayoutConstraint.activate(constraints) // activates constraints array
@@ -75,6 +79,17 @@ class SelectCityViewController: UIViewController {
         tableView.rowHeight = 44
         
     }
+    func initViewModel() {
+        // Get cities data
+        selectCityViewModel.fetchCities()
+        
+        // Reload TableView closure
+        selectCityViewModel.reloadTableView = { [weak self] in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
+        }
+    }
 }
 extension SelectCityViewController {
     /// Sets Navigation Bar styles and items
@@ -87,12 +102,12 @@ extension SelectCityViewController {
 }
 extension SelectCityViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cityArray.count
+        return selectCityViewModel.cities.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! CityTableViewCell
         
-        cell.title.text = cityArray[indexPath.row]
+        cell.title.text = selectCityViewModel.cities[indexPath.row]
         return cell
     }
 }

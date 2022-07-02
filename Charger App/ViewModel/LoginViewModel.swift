@@ -27,7 +27,7 @@ class LoginViewModel {
         
     }
     func fetchToken(completion: @escaping (Bool) -> () ) {
-        AuthService.shared.fetchAccessToken(eMailAddress: eMail!, deviceUDID: deviceID ?? "",
+        ChargerService.shared.fetchAccessToken(eMailAddress: eMail!, deviceUDID: deviceID ?? "",
                                             completion: { isSuccess in
             !isSuccess ? completion(false) : completion(true)
         })

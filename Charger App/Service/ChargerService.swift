@@ -8,10 +8,14 @@
 import Alamofire
 import Foundation
 
-class AuthService {
+class ChargerService {
+    
+    init() {
+        setupSession()
+    }
     
     // Singleton
-    static let shared = AuthService()
+    static let shared = ChargerService()
     
     // EndPoint
     enum AuthServiceEndPoint: String {
@@ -25,13 +29,13 @@ class AuthService {
     // URL
     private let loginUrl = URL(string: "\(AuthServiceEndPoint.authServiceUrl())/login")
     private let logoutUrlEndpoint = "\(AuthServiceEndPoint.authServiceUrl())/logout"
+    private let citiesUrlEndpoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/provinces"
     
     
     var session: Session?
     
     /// Post method for Login
     func fetchAccessToken(eMailAddress : String, deviceUDID: String, completion: @escaping (Bool) -> Void) {
-        setupSession()
         let headers: HTTPHeaders = [
             "Connection": "keep-alive",
             "Content-Type": "application/json"
@@ -72,8 +76,35 @@ class AuthService {
             }
         }
     }
+    func fetchCities(completion: @escaping ([String]?) -> Void) {
+        if let credintal = TokenManager.shared.getCredential() {
+            let token = credintal.token!
+            let userId = credintal.userID!
+            
+            let citiesUrl = URL(string: "\(citiesUrlEndpoint)?userID=\(userId)")
+            
+            let headers: HTTPHeaders = [
+                "Connection": "keep-alive",
+                "token": token
+            ]
+            
+            session?.request(citiesUrl!, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).responseDecodable(of: [String].self) { response in
+                print(response.debugDescription)
+                switch response.result {
+                    
+                case .success(let value):
+                    let cities = value
+                    completion(cities)
+
+                case .failure(let error):
+                    completion(nil)
+                    print(error)
+                }
+            }
+        }
+    }
 }
-extension AuthService {
+extension ChargerService {
     /// Create session instance with configuration
     func setupSession() {
         let configuration = URLSessionConfiguration.af.default
