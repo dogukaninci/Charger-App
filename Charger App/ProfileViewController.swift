@@ -25,6 +25,7 @@ class ProfileViewController: UIViewController {
         setupConstraints()
         style()
         setNavigationBarItems()
+        showCred()
     }
     /// Adds subviews to the AppointmentsViewController view
     private func setup() {
@@ -65,13 +66,13 @@ class ProfileViewController: UIViewController {
             
             ePostaPlaceholderLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 20),
             ePostaPlaceholderLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
-
+            
             iDPlaceholderLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
             iDPlaceholderLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
             
             ePostaLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 20),
             ePostaLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -10),
-
+            
             iDLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
             iDLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -10),
             
@@ -96,25 +97,25 @@ class ProfileViewController: UIViewController {
         ePostaPlaceholderLabel.numberOfLines = 1
         ePostaPlaceholderLabel.textColor = Theme.colorAux()
         ePostaPlaceholderLabel.textAlignment = .left
-
+        
         iDPlaceholderLabel.text = "Cihaz ID:"
         iDPlaceholderLabel.textColor = Theme.colorAux()
         iDPlaceholderLabel.font = Theme.fontNormal(size: 15)
         iDPlaceholderLabel.numberOfLines = 1
         iDPlaceholderLabel.textAlignment = .left
         
-        ePostaLabel.text = "dogukaninci93@gmail.com"
+        ePostaLabel.text = ""
         ePostaLabel.font = Theme.fontBold(size: 15)
         ePostaLabel.numberOfLines = 1
         ePostaLabel.textColor = Theme.colorMain()
         ePostaLabel.textAlignment = .right
-
-        iDLabel.text = "123456"
+        
+        iDLabel.text = LoginViewModel.shared.deviceID
         iDLabel.textColor = Theme.colorMain()
         iDLabel.font = Theme.fontBold(size: 15)
         iDLabel.numberOfLines = 1
         iDLabel.textAlignment = .right
-
+        
         logoutButton.setTitle("ÇIKIŞ YAP", for: .normal)
         logoutButton.titleLabel?.font = Theme.fontBold(size: 15)
         logoutButton.setTitleColor(Theme.colorThird(), for: .normal)
@@ -135,5 +136,23 @@ extension ProfileViewController {
 extension ProfileViewController {
     /// Log out proccess
     @objc func logoutButtonTapped() {
+        AuthService.shared.logout { isSuccess in
+            if isSuccess {
+                self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+                print("Logout success")
+                
+            } else {
+                print("Logout Error")
+            }
+        }
+    }
+}
+extension ProfileViewController {
+    // Read Credential from User Defaults
+    private func showCred() {
+        if let cred = TokenManager.shared.getCredential() {
+            ePostaLabel.text = cred.email ?? ""
+        }
+
     }
 }
