@@ -35,4 +35,7 @@ class TokenManager {
         }
         return nil
     }
+    func clearToken() {
+        UserDefaults.standard.removeObject(forKey: "Cred")
+    }
 }

@@ -109,7 +109,11 @@ extension AppointmentsViewController {
         navigationController?.navigationBar.compactAppearance = appearance
         navigationItem.title = "Randevular"
         navigationItem.titleView?.tintColor = Theme.colorMain()
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: #selector(profileButtonTapped))
+        let profileBarButton = UIBarButtonItem(image: UIImage(named: "Users"),
+                        style: .plain,
+                        target: self,
+                        action: #selector(profileButtonTapped))
+        navigationItem.leftBarButtonItem = profileBarButton
         navigationItem.titleView?.tintColor = Theme.colorMain()
         self.navigationController?.navigationBar.tintColor = Theme.colorMain()
     }

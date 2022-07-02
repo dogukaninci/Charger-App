@@ -9,7 +9,10 @@ import Foundation
 import UIKit
 
 class LoginViewModel {
-
+    
+    // Singleton
+    static let shared = LoginViewModel()
+    
     var eMail: String?
     let deviceID = UIDevice.current.identifierForVendor?.uuidString
     
@@ -24,17 +27,14 @@ class LoginViewModel {
         
     }
     func fetchToken(completion: @escaping (Bool) -> () ) {
-        LoginService.shared.fetchAccessToken(eMailAddress: eMail!, deviceUDID: deviceID ?? "",
-                                             completion: { isSuccess in
-            if !isSuccess {
-                completion(false)
-            }
-            completion(true)
+        AuthService.shared.fetchAccessToken(eMailAddress: eMail!, deviceUDID: deviceID ?? "",
+                                            completion: { isSuccess in
+            !isSuccess ? completion(false) : completion(true)
         })
     }
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-
+        
         let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         return emailPred.evaluate(with: email)
     }
