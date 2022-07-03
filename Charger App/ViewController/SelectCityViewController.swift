@@ -16,6 +16,8 @@ class SelectCityViewController: UIViewController {
          SelectCityViewModel()
      }()
     
+    private var searchTextCharCount = Int()
+    
     var constraints: [NSLayoutConstraint] = []
     
     override func viewDidLoad() {
@@ -76,8 +78,9 @@ class SelectCityViewController: UIViewController {
         // magnifying glass icon color
         searchBar.searchTextField.leftView?.tintColor = Theme.colorWhite()
         searchBar.searchTextField.layer.borderWidth = 1
-        searchBar.searchTextField.layer.borderColor = UIColor.red.cgColor
+        searchBar.searchTextField.layer.borderColor = Theme.colorWhite().cgColor
         searchBar.searchTextField.textColor = Theme.colorWhite()
+        searchBar.autocapitalizationType = .none
         
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .singleLine
@@ -85,6 +88,7 @@ class SelectCityViewController: UIViewController {
         // clear head inset
         tableView.separatorInset = .zero
         tableView.rowHeight = 44
+        tableView.tableFooterView?.backgroundColor = .red
         
     }
     func initViewModel() {
@@ -115,7 +119,11 @@ extension SelectCityViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! CityTableViewCell
         
-        cell.title.text = selectCityViewModel.filteredCities[indexPath.row]
+        let attrStri = NSMutableAttributedString.init(string:selectCityViewModel.filteredCities[indexPath.row])
+        let myRange = NSRange(location: 0, length: searchTextCharCount)
+        attrStri.addAttributes([NSAttributedString.Key.foregroundColor : Theme.colorWhite() as Any], range: myRange)
+        cell.title.attributedText = attrStri
+
         return cell
     }
 }
@@ -124,10 +132,21 @@ extension SelectCityViewController {
     private func delegation() {
         tableView.dataSource = self
         tableView.delegate = self
+        searchBar.delegate = self
     }
 }
 extension SelectCityViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         selectCityViewModel.filterArrayViaSearchBarText(searchBarText: searchText)
+        searchTextCharCount = searchText.count
+        if(searchText == "") {
+            searchBar.searchTextField.layer.borderColor = Theme.colorWhite().cgColor
+        } else {
+            if (selectCityViewModel.filteredCities.count == 0) {
+                searchBar.searchTextField.layer.borderColor = Theme.colorSecurityOn().cgColor
+            } else {
+                searchBar.searchTextField.layer.borderColor = Theme.colorPrimary().cgColor
+            }
+        }
     }
 }

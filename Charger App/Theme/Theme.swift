@@ -29,4 +29,10 @@ class Theme {
     static func navBarColor() -> UIColor {
         return UIColor(red: 67/255, green: 73/255, blue: 85/255, alpha: 1.0)
     }
+    static func colorSecurityOn() -> UIColor {
+        return UIColor(red: 255/255, green: 44/255, blue: 85/255, alpha: 1.0)
+    }
+    static func colorPrimary() -> UIColor {
+        return UIColor(red: 0/255, green: 255/255, blue: 0/255, alpha: 1.0)
+    }
 }
