@@ -17,7 +17,7 @@ class LoginViewController: UIViewController {
     let loginViewModel = LoginViewModel()
     
     var constraints: [NSLayoutConstraint] = []
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setTextFieldDelegate()
@@ -88,7 +88,7 @@ class LoginViewController: UIViewController {
             emailTextField,
             loginButton
         ].forEach {
-          $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.translatesAutoresizingMaskIntoConstraints = false
         }
         constraints.append(contentsOf: [
             
@@ -121,7 +121,7 @@ class LoginViewController: UIViewController {
         gl.frame = self.view.bounds
         self.view.layer.insertSublayer(gl, at:0)
     }
-
+    
 }
 extension UITextField {
     /// Draw thin bottom line to the TextField object
@@ -134,6 +134,16 @@ extension UITextField {
     }
 }
 extension LoginViewController {
+    /// Registers to the keyboard's notification
+    private func addKeyboardNotificationObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidChangeFrame(sender:)), name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
+    }
+}
+extension LoginViewController {
     /// Shifts view y point relative to keyboard height and button height
     /// - Parameter sender: NSNotification
     @objc func keyboardWillShow(sender: NSNotification) {
@@ -143,11 +153,28 @@ extension LoginViewController {
             let bottomSpace = self.view.frame.height - (loginButton.frame.origin.y + loginButton.frame.height)
             view.frame.origin.y -= keyboardHeight - bottomSpace
         }
-         
     }
-
+    
     @objc func keyboardWillHide(sender: NSNotification) {
         hideKeyboardOperation()
+    }
+    
+    @objc func keyboardDidChangeFrame(sender: NSNotification) {
+        if (view.frame.origin.y != 0) {
+            view.frame.origin.y = 0
+            if let keyboardFrame: NSValue = sender.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+                let keyboardRectangle = keyboardFrame.cgRectValue
+                let keyboardHeight = keyboardRectangle.height
+                let bottomSpace = self.view.frame.height - (loginButton.frame.origin.y + loginButton.frame.height)
+                view.frame.origin.y -= keyboardHeight - bottomSpace
+            }
+        }
+    }
+}
+extension LoginViewController {
+    /// Restores view's y point when keyboard disappears
+    private func hideKeyboardOperation() {
+        view.frame.origin.y = 0
     }
 }
 extension LoginViewController: UITextFieldDelegate {
@@ -160,20 +187,6 @@ extension LoginViewController {
     /// Hide Keyboard
     @objc func hideKeyboard() {
         emailTextField.resignFirstResponder()
-    }
-}
-extension LoginViewController {
-    /// Restores view's y point when keyboard disappears
-    private func hideKeyboardOperation() {
-        view.frame.origin.y = 0
-    }
-}
-extension LoginViewController {
-    /// Registers to the keyboard's notification
-    private func addKeyboardNotificationObserver() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }
 extension LoginViewController {

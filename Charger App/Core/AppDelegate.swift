@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        let loginVC = SelectCityViewController()
+        let loginVC = LoginViewController()
         let navViewController = UINavigationController(rootViewController: loginVC)
         window?.rootViewController = navViewController
         
