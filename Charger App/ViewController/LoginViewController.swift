@@ -30,6 +30,7 @@ class LoginViewController: UIViewController {
         
     }
     override func viewDidLayoutSubviews() {
+        setGradientBackground()
         emailTextField.addBottomBorder()
     }
     
@@ -47,27 +48,24 @@ class LoginViewController: UIViewController {
     }
     
     private func style(){
-        if let backgroundImage = UIImage(named: "background") {
-            view.backgroundColor = UIColor(patternImage: backgroundImage)
-        }
         
         let welcomeString = NSMutableAttributedString(string: "Charger'a hoş geldiniz.")
         let stringRange = NSRange(location: 0, length: 9) // range starting at location 0 with a lenth of 9: "Charger'a"
         welcomeString.addAttribute(NSAttributedString.Key.font, value: Theme.fontBold(size: 22), range: stringRange)
         welcomeLabel.attributedText = welcomeString
-        welcomeLabel.textColor = Theme.colorMain()
+        welcomeLabel.textColor = Theme.colorWhite()
         welcomeLabel.textAlignment = .center
         
         welcomeDescriptionLabel.text = "Charger'ı kullanmak için giriş yapmanız gerekiyor."
-        welcomeDescriptionLabel.textColor = Theme.colorAux()
+        welcomeDescriptionLabel.textColor = Theme.colorGrayscale()
         welcomeDescriptionLabel.font = Theme.fontNormal(size: 15)
         welcomeDescriptionLabel.numberOfLines = 0
         welcomeDescriptionLabel.textAlignment = .center
         
-        let welcomeDescriptionString = NSAttributedString(string: "E-POSTA ADRESİNİZ", attributes: [NSAttributedString.Key.foregroundColor : Theme.colorAux()])
+        let welcomeDescriptionString = NSAttributedString(string: "E-POSTA ADRESİNİZ", attributes: [NSAttributedString.Key.foregroundColor : Theme.colorGrayscale()])
         emailTextField.attributedPlaceholder = welcomeDescriptionString
         emailTextField.font = Theme.fontNormal(size: 15)
-        emailTextField.textColor = Theme.colorMain()
+        emailTextField.textColor = Theme.colorWhite()
         emailTextField.autocorrectionType = .no
         emailTextField.autocapitalizationType = .none
         emailTextField.keyboardType = .emailAddress
@@ -76,8 +74,8 @@ class LoginViewController: UIViewController {
         
         loginButton.setTitle("GİRİŞ YAP", for: .normal)
         loginButton.titleLabel?.font = Theme.fontBold(size: 15)
-        loginButton.setTitleColor(Theme.colorThird(), for: .normal)
-        loginButton.backgroundColor = Theme.colorAux()
+        loginButton.setTitleColor(Theme.darkColor(), for: .normal)
+        loginButton.backgroundColor = Theme.colorGrayscale()
         loginButton.layer.cornerRadius = 20
         loginButton.isEnabled = false
     }
@@ -115,6 +113,14 @@ class LoginViewController: UIViewController {
         
         NSLayoutConstraint.activate(constraints) // activates constraints array
     }
+    /// add gradient background layer to view
+    private func setGradientBackground() {
+        let gl = CAGradientLayer()
+        gl.colors = [ Theme.colorCharcoalGrey().cgColor, Theme.darkColor().cgColor]
+        gl.locations = [ 0.0, 1.0]
+        gl.frame = self.view.bounds
+        self.view.layer.insertSublayer(gl, at:0)
+    }
 
 }
 extension UITextField {
@@ -122,7 +128,7 @@ extension UITextField {
     func addBottomBorder(){
         let bottomLine = CALayer()
         bottomLine.frame = CGRect(x: 0, y: self.frame.size.height - 1, width: self.frame.size.width, height: 1)
-        bottomLine.backgroundColor = Theme.colorAux().cgColor
+        bottomLine.backgroundColor = Theme.colorGrayscale().cgColor
         borderStyle = .none
         layer.addSublayer(bottomLine)
     }
@@ -188,7 +194,7 @@ extension LoginViewController {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = Theme.navBarColor()
-        appearance.titleTextAttributes = [.foregroundColor: Theme.colorMain(),.font: Theme.fontBold(size: 20)]
+        appearance.titleTextAttributes = [.foregroundColor: Theme.colorWhite(),.font: Theme.fontBold(size: 20)]
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
@@ -217,10 +223,10 @@ extension LoginViewController {
     @objc func eMailTextFieldEditingChange(_ textField: UITextField) {
         if loginViewModel.saveMail(eMailTextField: textField.text!) {
             loginButton.isEnabled = true
-            loginButton.backgroundColor = Theme.colorMain()
+            loginButton.backgroundColor = Theme.colorWhite()
         } else {
             loginButton.isEnabled = false
-            loginButton.backgroundColor = Theme.colorAux()
+            loginButton.backgroundColor = Theme.colorGrayscale()
         }
     }
 }

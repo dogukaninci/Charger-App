@@ -26,7 +26,7 @@ class CityTableViewCell: UITableViewCell {
         title.translatesAutoresizingMaskIntoConstraints = false
         
         title.font = Theme.fontNormal(size: 15)
-        title.textColor = Theme.colorAux()
+        title.textColor = Theme.colorGrayscale()
         
         backgroundColor = .clear
         

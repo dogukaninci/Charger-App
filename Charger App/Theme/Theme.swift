@@ -14,14 +14,17 @@ class Theme {
     static func fontBold(size: CGFloat) -> UIFont{
         return UIFont.boldSystemFont(ofSize: size)
     }
-    static func colorMain() -> UIColor {
+    static func colorWhite() -> UIColor {
         return .white
     }
-    static func colorAux() -> UIColor {
-        return .lightGray
+    static func colorGrayscale() -> UIColor {
+        return UIColor(red: 183/255, green: 189/255, blue: 203/255, alpha: 1.0)
     }
-    static func colorThird() -> UIColor {
-        return .black
+    static func colorCharcoalGrey() -> UIColor {
+        return UIColor(red: 67/255, green:73/255, blue: 85/255, alpha: 1.0)
+    }
+    static func darkColor() -> UIColor {
+        return UIColor(red: 26/255, green: 30/255, blue: 37/255, alpha: 1.0)
     }
     static func navBarColor() -> UIColor {
         return UIColor(red: 67/255, green: 73/255, blue: 85/255, alpha: 1.0)

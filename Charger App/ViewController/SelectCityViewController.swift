@@ -27,6 +27,9 @@ class SelectCityViewController: UIViewController {
         setNavigationBarItems()
         initViewModel()
     }
+    override func viewDidLayoutSubviews() {
+        setGradientBackground()
+    }
     /// Adds subviews to the AppointmentsViewController view
     private func setup() {
         view.addSubview(searchBar)
@@ -57,23 +60,28 @@ class SelectCityViewController: UIViewController {
         
         NSLayoutConstraint.activate(constraints) // activates constraints array
     }
+    /// add gradient background layer to view
+    private func setGradientBackground() {
+        let gl = CAGradientLayer()
+        gl.colors = [ Theme.colorCharcoalGrey().cgColor, Theme.darkColor().cgColor]
+        gl.locations = [ 0.0, 1.0]
+        gl.frame = self.view.bounds
+        self.view.layer.insertSublayer(gl, at:0)
+    }
     private func style(){
-        if let backgroundImage = UIImage(named: "background") {
-            view.backgroundColor = UIColor(patternImage: backgroundImage)
-        }
         searchBar.placeholder = "Şehir Ara"
         // Clear unnecessary background
         searchBar.searchBarStyle = .minimal
         searchBar.searchTextField.layer.cornerRadius = 18
         // magnifying glass icon color
-        searchBar.searchTextField.leftView?.tintColor = Theme.colorMain()
+        searchBar.searchTextField.leftView?.tintColor = Theme.colorWhite()
         searchBar.searchTextField.layer.borderWidth = 1
         searchBar.searchTextField.layer.borderColor = UIColor.red.cgColor
-        searchBar.searchTextField.textColor = Theme.colorMain()
+        searchBar.searchTextField.textColor = Theme.colorWhite()
         
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .singleLine
-        tableView.separatorColor = Theme.colorAux()
+        tableView.separatorColor = Theme.colorGrayscale()
         // clear head inset
         tableView.separatorInset = .zero
         tableView.rowHeight = 44
@@ -102,12 +110,12 @@ extension SelectCityViewController {
 }
 extension SelectCityViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return selectCityViewModel.cities.count
+        return selectCityViewModel.filteredCities.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! CityTableViewCell
         
-        cell.title.text = selectCityViewModel.cities[indexPath.row]
+        cell.title.text = selectCityViewModel.filteredCities[indexPath.row]
         return cell
     }
 }
@@ -116,5 +124,10 @@ extension SelectCityViewController {
     private func delegation() {
         tableView.dataSource = self
         tableView.delegate = self
+    }
+}
+extension SelectCityViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        selectCityViewModel.filterArrayViaSearchBarText(searchBarText: searchText)
     }
 }

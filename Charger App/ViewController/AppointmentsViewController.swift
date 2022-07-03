@@ -23,6 +23,9 @@ class AppointmentsViewController: UIViewController {
         style()
         setNavigationBarItems()
     }
+    override func viewDidLayoutSubviews() {
+        setGradientBackground()
+    }
     /// Adds subviews to the AppointmentsViewController view
     private func setup() {
         view.addSubview(appointmentLabel)
@@ -65,10 +68,15 @@ class AppointmentsViewController: UIViewController {
         
         NSLayoutConstraint.activate(constraints) // activates constraints array
     }
+    /// add gradient background layer to view
+    private func setGradientBackground() {
+        let gl = CAGradientLayer()
+        gl.colors = [ Theme.colorCharcoalGrey().cgColor, Theme.darkColor().cgColor]
+        gl.locations = [ 0.0, 1.0]
+        gl.frame = self.view.bounds
+        self.view.layer.insertSublayer(gl, at:0)
+    }
     private func style(){
-        if let backgroundImage = UIImage(named: "background") {
-            view.backgroundColor = UIColor(patternImage: backgroundImage)
-        }
         if let appointmentLogo = UIImage(named: "appointmentLogo") {
             logo.image = appointmentLogo
         }
@@ -76,19 +84,19 @@ class AppointmentsViewController: UIViewController {
         appointmentLabel.text = "Henüz bir randevu oluşturmadınız."
         appointmentLabel.font = Theme.fontBold(size: 30)
         appointmentLabel.numberOfLines = 0
-        appointmentLabel.textColor = Theme.colorMain()
+        appointmentLabel.textColor = Theme.colorWhite()
         appointmentLabel.textAlignment = .center
 
         appointmentDescriptionLabel.text = "Oluşturulan randevular burada listelenir."
-        appointmentDescriptionLabel.textColor = Theme.colorAux()
+        appointmentDescriptionLabel.textColor = Theme.colorGrayscale()
         appointmentDescriptionLabel.font = Theme.fontNormal(size: 15)
         appointmentDescriptionLabel.numberOfLines = 0
         appointmentDescriptionLabel.textAlignment = .center
 
         createButton.setTitle("RANDEVU OLUŞTUR", for: .normal)
         createButton.titleLabel?.font = Theme.fontBold(size: 15)
-        createButton.setTitleColor(Theme.colorThird(), for: .normal)
-        createButton.backgroundColor = Theme.colorMain()
+        createButton.setTitleColor(Theme.darkColor(), for: .normal)
+        createButton.backgroundColor = Theme.colorWhite()
         createButton.layer.cornerRadius = 20
     }
 }
@@ -103,19 +111,19 @@ extension AppointmentsViewController {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = Theme.navBarColor()
-        appearance.titleTextAttributes = [.foregroundColor: Theme.colorMain(),.font: Theme.fontBold(size: 20)]
+        appearance.titleTextAttributes = [.foregroundColor: Theme.colorWhite(),.font: Theme.fontBold(size: 20)]
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
         navigationItem.title = "Randevular"
-        navigationItem.titleView?.tintColor = Theme.colorMain()
+        navigationItem.titleView?.tintColor = Theme.colorWhite()
         let profileBarButton = UIBarButtonItem(image: UIImage(named: "Users"),
                         style: .plain,
                         target: self,
                         action: #selector(profileButtonTapped))
         navigationItem.leftBarButtonItem = profileBarButton
-        navigationItem.titleView?.tintColor = Theme.colorMain()
-        self.navigationController?.navigationBar.tintColor = Theme.colorMain()
+        navigationItem.titleView?.tintColor = Theme.colorWhite()
+        self.navigationController?.navigationBar.tintColor = Theme.colorWhite()
     }
 }
 extension AppointmentsViewController {

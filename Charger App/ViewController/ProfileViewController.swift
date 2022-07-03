@@ -27,6 +27,9 @@ class ProfileViewController: UIViewController {
         setNavigationBarItems()
         showCred()
     }
+    override func viewDidLayoutSubviews() {
+        setGradientBackground()
+    }
     /// Adds subviews to the AppointmentsViewController view
     private func setup() {
         containerView.addSubview(ePostaPlaceholderLabel)
@@ -84,10 +87,15 @@ class ProfileViewController: UIViewController {
         
         NSLayoutConstraint.activate(constraints) // activates constraints array
     }
+    /// add gradient background layer to view
+    private func setGradientBackground() {
+        let gl = CAGradientLayer()
+        gl.colors = [ Theme.colorCharcoalGrey().cgColor, Theme.darkColor().cgColor]
+        gl.locations = [ 0.0, 1.0]
+        gl.frame = self.view.bounds
+        self.view.layer.insertSublayer(gl, at:0)
+    }
     private func style(){
-        if let backgroundImage = UIImage(named: "background") {
-            view.backgroundColor = UIColor(patternImage: backgroundImage)
-        }
         if let profileLogo = UIImage(named: "profileLogo") {
             logo.image = profileLogo
         }
@@ -95,11 +103,11 @@ class ProfileViewController: UIViewController {
         ePostaPlaceholderLabel.text = "E-posta:"
         ePostaPlaceholderLabel.font = Theme.fontNormal(size: 15)
         ePostaPlaceholderLabel.numberOfLines = 1
-        ePostaPlaceholderLabel.textColor = Theme.colorAux()
+        ePostaPlaceholderLabel.textColor = Theme.colorGrayscale()
         ePostaPlaceholderLabel.textAlignment = .left
         
         iDPlaceholderLabel.text = "Cihaz ID:"
-        iDPlaceholderLabel.textColor = Theme.colorAux()
+        iDPlaceholderLabel.textColor = Theme.colorGrayscale()
         iDPlaceholderLabel.font = Theme.fontNormal(size: 15)
         iDPlaceholderLabel.numberOfLines = 1
         iDPlaceholderLabel.textAlignment = .left
@@ -107,19 +115,19 @@ class ProfileViewController: UIViewController {
         ePostaLabel.text = ""
         ePostaLabel.font = Theme.fontBold(size: 15)
         ePostaLabel.numberOfLines = 1
-        ePostaLabel.textColor = Theme.colorMain()
+        ePostaLabel.textColor = Theme.colorWhite()
         ePostaLabel.textAlignment = .right
         
         iDLabel.text = LoginViewModel.shared.deviceID
-        iDLabel.textColor = Theme.colorMain()
+        iDLabel.textColor = Theme.colorWhite()
         iDLabel.font = Theme.fontBold(size: 15)
         iDLabel.numberOfLines = 1
         iDLabel.textAlignment = .right
         
         logoutButton.setTitle("ÇIKIŞ YAP", for: .normal)
         logoutButton.titleLabel?.font = Theme.fontBold(size: 15)
-        logoutButton.setTitleColor(Theme.colorThird(), for: .normal)
-        logoutButton.backgroundColor = Theme.colorMain()
+        logoutButton.setTitleColor(Theme.darkColor(), for: .normal)
+        logoutButton.backgroundColor = Theme.colorWhite()
         logoutButton.layer.cornerRadius = 20
         
         containerView.backgroundColor = Theme.navBarColor()
