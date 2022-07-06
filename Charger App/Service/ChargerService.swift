@@ -30,9 +30,13 @@ class ChargerService {
     private let loginUrl = URL(string: "\(AuthServiceEndPoint.authServiceUrl())/login")
     private let logoutUrlEndpoint = "\(AuthServiceEndPoint.authServiceUrl())/logout"
     private let citiesUrlEndpoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/provinces"
+    private let stationsEndPoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/stations"
     
     
     var session: Session?
+    
+    var userLatitude = 39.925058
+    var userLongitude = 32.836860
     
     /// Post method for Login
     func fetchAccessToken(eMailAddress : String, deviceUDID: String, completion: @escaping (Bool) -> Void) {
@@ -95,6 +99,32 @@ class ChargerService {
                 case .success(let value):
                     let cities = value
                     completion(cities)
+
+                case .failure(let error):
+                    completion(nil)
+                    print(error)
+                }
+            }
+        }
+    }
+    func fetchStations(completion: @escaping (Station?) -> Void) {
+        if let credintal = TokenManager.shared.getCredential() {
+            let token = credintal.token!
+            let userId = credintal.userID!
+            
+            let stationsUrl = URL(string: "\(stationsEndPoint)?userID=\(userId)&userLatitude=\(userLatitude)&userLongitude=\(userLongitude)")
+            
+            let headers: HTTPHeaders = [
+                "Connection": "keep-alive",
+                "token": token
+            ]
+            
+            session?.request(stationsUrl!, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).responseDecodable(of: Station.self) { response in
+                print(response.debugDescription)
+                switch response.result {
+                    
+                case .success(let value):
+                    completion(value)
 
                 case .failure(let error):
                     completion(nil)

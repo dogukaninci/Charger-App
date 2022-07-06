@@ -127,7 +127,8 @@ extension SelectCityViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectStationVC = SelectStationViewController()
+        let city = selectCityViewModel.filteredCities[indexPath.row]
+        let selectStationVC = SelectStationViewController(viewModel: city)
         navigationController?.pushViewController(selectStationVC, animated: true)
     }
 }

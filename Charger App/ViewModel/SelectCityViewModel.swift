@@ -8,11 +8,7 @@
 import Foundation
 
 class SelectCityViewModel {
-    var cities = [String]() {
-        didSet {
-            reloadTableView?()
-        }
-    }
+    var cities = [String]()
     var filteredCities = [String]() {
         didSet {
             reloadTableView?()

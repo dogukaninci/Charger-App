@@ -21,9 +21,22 @@ class SelectStationViewController: UIViewController {
     private let resultLabel = UILabel()
     private let tableView = UITableView()
     
+    private let selectStationViewModel: SelectStationViewModel
+    
     var items = ["Type 2","CSS", "6 km", "asdasdasdadasdsadad"]
     
     var constraints: [NSLayoutConstraint] = []
+    
+    init(viewModel: String) {
+        // Create SelectStationViewModel with city info coming from
+        //SelectCityViewController to SelectStationViewController seque
+        self.selectStationViewModel = SelectStationViewModel(city: viewModel)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +45,7 @@ class SelectStationViewController: UIViewController {
         setupConstraints()
         style()
         setNavigationBarItems()
+        initViewModel()
     }
     override func viewDidLayoutSubviews() {
         setGradientBackground()
@@ -102,10 +116,6 @@ class SelectStationViewController: UIViewController {
         searchBar.autocapitalizationType = .none
         searchBar.searchTextField.clipsToBounds = true
         
-        let resultString = NSMutableAttributedString(string: "'İstanbul' şehri için 3 sonuç görüntüleniyor.")
-        let stringRange = NSRange(location: 0, length: 9) // range starting at location 0 with a lenth of 9: "Charger'a"
-        resultString.addAttribute(NSAttributedString.Key.font, value: Theme.fontBold(size: 20), range: stringRange)
-        resultLabel.attributedText = resultString
         resultLabel.textColor = Theme.colorWhite()
         resultLabel.textAlignment = .left
         
@@ -123,6 +133,28 @@ class SelectStationViewController: UIViewController {
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
     }
+    func initViewModel() {
+        // Get stations data
+        selectStationViewModel.fetchStations()
+        
+        // Reload TableView closure
+        selectStationViewModel.reloadTableView = { [weak self] in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+                self?.updateResultTitle(city: (self?.selectStationViewModel.city!)!,
+                                        filteredStationCount: (self?.selectStationViewModel.filteredStations.count)!)
+            }
+        }
+    }
+    /// Update result title
+    func updateResultTitle(city: String, filteredStationCount: Int) {
+        let cityString = NSMutableAttributedString(string: "'\(city) '"
+                                                   ,attributes: [ NSAttributedString.Key.font: Theme.fontBold(size: 15) ])
+        let descriptionString = NSMutableAttributedString(string: "şehri için \(filteredStationCount) sonuç görüntüleniyor."
+                                                          , attributes: [ NSAttributedString.Key.font: Theme.fontNormal(size: 15) ])
+        cityString.append(descriptionString)
+        resultLabel.attributedText = cityString
+    }
 }
 extension SelectStationViewController {
     /// Table View Delegation
@@ -136,18 +168,18 @@ extension SelectStationViewController {
 }
 extension SelectStationViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return selectStationViewModel.filteredStations.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "filterTableViewCell", for: indexPath) as! FilterTableViewCell
-        cell.stationName.text = "Kanyon AVM, Levent"
-        cell.socketTypeImageView.image = UIImage(named: "avatar")
+        cell.stationName.text = selectStationViewModel.filteredStations[indexPath.row].stationName
+        cell.socketTypeImageView.image = UIImage(named: findStationTypeImage(station: selectStationViewModel.filteredStations[indexPath.row]))
         cell.avaibleTimePlaceholderLabel.text = "Hizmet saatleri:"
         cell.avaibleTimeLabel.text = "24 Saat"
         cell.avaibleSocketNumberPlaceholderLabel.text = "Uygun soket sayısı:"
-        cell.avaibleSocketNumberLabel.text = "3/3"
-        cell.distanceLabel.text = "1.4 km"
+        cell.avaibleSocketNumberLabel.text = "\(selectStationViewModel.filteredStations[indexPath.row].socketCount! - (selectStationViewModel.filteredStations[indexPath.row].occupiedSocketCount!)) / \(selectStationViewModel.filteredStations[indexPath.row].socketCount!)"
+        cell.distanceLabel.text = String(format: "%.1f", selectStationViewModel.filteredStations[indexPath.row].distanceInKM ?? 0) + " km"
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -157,7 +189,18 @@ extension SelectStationViewController: UITableViewDelegate, UITableViewDataSourc
     
 }
 extension SelectStationViewController: UISearchBarDelegate {
-    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        selectStationViewModel.filterArrayViaSearchBarText(searchBarText: searchText)
+        if(searchText == "") {
+            searchBar.searchTextField.layer.borderColor = Theme.colorWhite().cgColor
+        } else {
+            if (selectStationViewModel.filteredStations.count == 0) {
+                searchBar.searchTextField.layer.borderColor = Theme.colorSecurityOn().cgColor
+            } else {
+                searchBar.searchTextField.layer.borderColor = Theme.colorPrimary().cgColor
+            }
+        }
+    }
 }
 extension SelectStationViewController: UICollectionViewDelegate, UICollectionViewDataSource,
                                        UICollectionViewDelegateFlowLayout {
@@ -191,6 +234,24 @@ extension SelectStationViewController {
 extension SelectStationViewController {
     @objc func filterButtonTapped() {
         print("filtertapped")
+    }
+}
+extension SelectStationViewController {
+    /// Find image by searching stations charge type array
+    /// - Parameter station: StationElement
+    /// - Returns: String
+    private func findStationTypeImage(station: StationElement) -> String{
+        if let socket = station.sockets {
+            if(socket.contains(where: { $0.chargeType?.rawValue == "AC" })) {
+                if(socket.contains(where: { $0.chargeType?.rawValue == "DC" })) {
+                    return "acdc"
+                }
+            }
+            if(socket.contains(where: { $0.chargeType?.rawValue == "AC" })) {
+                return "ac"
+            }
+        }
+        return "dc"
     }
 }
 
