@@ -32,7 +32,7 @@ class SelectCityViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         setGradientBackground()
     }
-    /// Adds subviews to the AppointmentsViewController view
+    /// Adds subviews to the SelectCityViewController view
     private func setup() {
         view.addSubview(searchBar)
         view.addSubview(tableView)
@@ -133,7 +133,7 @@ extension SelectCityViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 extension SelectCityViewController {
-    /// Table View Delegation
+    /// Table View, Search Bar Delegation
     private func delegation() {
         tableView.dataSource = self
         tableView.delegate = self

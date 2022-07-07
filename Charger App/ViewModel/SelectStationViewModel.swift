@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Alamofire
 
 class SelectStationViewModel {
     // All stations array
@@ -27,8 +26,17 @@ class SelectStationViewModel {
     let city: String!
     // Index matching search bar text
     private var indexSet = [Int]()
+    
     // Closure for reload table view
     var reloadTableView: (() -> Void)?
+    // Closure for reload collection view
+    var reloadCollectionView: (() -> Void)?
+    
+    var filterArray = [String]() {
+        didSet {
+            reloadCollectionView?()
+        }
+    }
     
     init(city: String) {
         // City info coming from SelectCityViewController
@@ -66,5 +74,14 @@ class SelectStationViewModel {
             self.indexSet = transformedStations.indices.filter {transformedStations[$0].contains(convertedSearchText)}
             self.filteredStations = indexSet.map { filteredStationViaCity[$0] }
         }
+    }
+}
+extension SelectStationViewModel: MyDataSendingDelegateProtocol {
+    func sendDataToSelectStationViewModel(chargeTypesArrSelectedData: [String], socketTypesArrSelectedData: [String], serviceTypesArrSelectedData: [String], sliderValue: Float) {
+        filterArray.removeAll()
+        chargeTypesArrSelectedData.forEach({ filterArray.append($0) })
+        socketTypesArrSelectedData.forEach({ filterArray.append($0) })
+        serviceTypesArrSelectedData.forEach({ filterArray.append($0) })
+        
     }
 }

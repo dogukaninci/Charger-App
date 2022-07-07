@@ -30,7 +30,7 @@ class ProfileViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         setGradientBackground()
     }
-    /// Adds subviews to the AppointmentsViewController view
+    /// Adds subviews to the ProfileViewController view
     private func setup() {
         containerView.addSubview(ePostaPlaceholderLabel)
         containerView.addSubview(iDPlaceholderLabel)

@@ -23,8 +23,6 @@ class SelectStationViewController: UIViewController {
     
     private let selectStationViewModel: SelectStationViewModel
     
-    var items = ["Type 2","CSS", "6 km", "asdasdasdadasdsadad"]
-    
     var constraints: [NSLayoutConstraint] = []
     
     init(viewModel: String) {
@@ -50,7 +48,7 @@ class SelectStationViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         setGradientBackground()
     }
-    /// Adds subviews to the AppointmentsViewController view
+    /// Adds subviews to the SelectStationViewController view
     private func setup() {
         view.addSubview(searchBar)
         view.addSubview(collectionView)
@@ -138,11 +136,17 @@ class SelectStationViewController: UIViewController {
         selectStationViewModel.fetchStations()
         
         // Reload TableView closure
-        selectStationViewModel.reloadTableView = { [weak self] in
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            self.selectStationViewModel.reloadTableView = { [weak self] in
                 self?.tableView.reloadData()
                 self?.updateResultTitle(city: (self?.selectStationViewModel.city!)!,
                                         filteredStationCount: (self?.selectStationViewModel.filteredStations.count)!)
+            }
+        }
+        // Reload collectionView closure
+        DispatchQueue.main.async {
+            self.selectStationViewModel.reloadCollectionView = { [weak self] in
+                self?.collectionView.reloadData()
             }
         }
     }
@@ -157,7 +161,7 @@ class SelectStationViewController: UIViewController {
     }
 }
 extension SelectStationViewController {
-    /// Table View Delegation
+    /// Table View, Collection View, Search Bar Delegation
     private func delegation() {
         tableView.dataSource = self
         tableView.delegate = self
@@ -205,17 +209,17 @@ extension SelectStationViewController: UISearchBarDelegate {
 extension SelectStationViewController: UICollectionViewDelegate, UICollectionViewDataSource,
                                        UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return items.count
+        return selectStationViewModel.filterArray.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell",
                                                       for: indexPath) as! FilterCollectionViewCell
-        cell.filterTitle.text = items[indexPath.row]
+        cell.filterTitle.text = selectStationViewModel.filterArray[indexPath.row]
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let size = (self.items[indexPath.row] as NSString).size(withAttributes: [NSAttributedString.Key.font: Theme.fontNormal(size: 13)])
+        let size = (selectStationViewModel.filterArray[indexPath.row] as NSString).size(withAttributes: [NSAttributedString.Key.font: Theme.fontNormal(size: 13)])
         return CGSize(width: size.width + 50, height: size.height + 15)
     }
 }
@@ -233,7 +237,9 @@ extension SelectStationViewController {
 }
 extension SelectStationViewController {
     @objc func filterButtonTapped() {
-        print("filtertapped")
+        let filterVC = FilterViewController(viewModel: selectStationViewModel.filterArray)
+        filterVC.filterViewModel.delegate = self.selectStationViewModel
+        navigationController?.pushViewController(filterVC, animated: true)
     }
 }
 extension SelectStationViewController {

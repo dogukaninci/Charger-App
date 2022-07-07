@@ -53,7 +53,7 @@ class ChargerService {
                 let cred = value
                 TokenManager.shared.saveAccessToken(cred: cred)
                 completion(true)
-
+                
             case .failure(let error):
                 completion(false)
                 print(error)
@@ -74,9 +74,15 @@ class ChargerService {
             ]
             
             session?.request(logoutUrl!, method: .post, parameters: nil, encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).response { response in
-                print(response.debugDescription)
-                TokenManager.shared.clearToken()
-                completion(true)
+                switch response.result {
+                case .success(_):
+                    TokenManager.shared.clearToken()
+                    completion(true)
+                    
+                case .failure(let error):
+                    completion(false)
+                    print(error)
+                }
             }
         }
     }
@@ -93,13 +99,11 @@ class ChargerService {
             ]
             
             session?.request(citiesUrl!, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).responseDecodable(of: [String].self) { response in
-                print(response.debugDescription)
                 switch response.result {
-                    
                 case .success(let value):
                     let cities = value
                     completion(cities)
-
+                    
                 case .failure(let error):
                     completion(nil)
                     print(error)
@@ -120,12 +124,11 @@ class ChargerService {
             ]
             
             session?.request(stationsUrl!, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).responseDecodable(of: Station.self) { response in
-                print(response.debugDescription)
                 switch response.result {
                     
                 case .success(let value):
                     completion(value)
-
+                    
                 case .failure(let error):
                     completion(nil)
                     print(error)
