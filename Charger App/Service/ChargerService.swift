@@ -31,6 +31,8 @@ class ChargerService {
     private let logoutUrlEndpoint = "\(AuthServiceEndPoint.authServiceUrl())/logout"
     private let citiesUrlEndpoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/provinces"
     private let stationsEndPoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/stations"
+    private let avaibleSlotsEndPoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/stations"
+    private let sendAppointmentRequestEndPoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/appointments/make"
     
     
     var session: Session?
@@ -111,7 +113,7 @@ class ChargerService {
             }
         }
     }
-    func fetchStations(completion: @escaping (Station?) -> Void) {
+    func fetchStations(completion: @escaping (Stations?) -> Void) {
         if let credintal = TokenManager.shared.getCredential() {
             let token = credintal.token!
             let userId = credintal.userID!
@@ -123,7 +125,7 @@ class ChargerService {
                 "token": token
             ]
             
-            session?.request(stationsUrl!, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).responseDecodable(of: Station.self) { response in
+            session?.request(stationsUrl!, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).responseDecodable(of: Stations.self) { response in
                 switch response.result {
                     
                 case .success(let value):
@@ -131,6 +133,55 @@ class ChargerService {
                     
                 case .failure(let error):
                     completion(nil)
+                    print(error)
+                }
+            }
+        }
+    }
+    func fetchAvaibleTimes(stationID: Int, date: String, completion: @escaping (Station?) -> Void) {
+        if let credintal = TokenManager.shared.getCredential() {
+            let token = credintal.token!
+            let userId = credintal.userID!
+            
+            let slotsUrl = URL(string: "\(stationsEndPoint)/\(stationID)?userID=\(userId)&date=\(date)")
+            
+            let headers: HTTPHeaders = [
+                "Connection": "keep-alive",
+                "token": token
+            ]
+            
+            session?.request(slotsUrl!, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).responseDecodable(of: Station.self) { response in
+                switch response.result {
+                    
+                case .success(let value):
+                    completion(value)
+                    
+                case .failure(let error):
+                    completion(nil)
+                    print(error)
+                }
+            }
+        }
+    }
+    func sendAppointmentRequest(stationID: Int, socketID: Int, timeSlot: String, appointmentDate: String, completion: @escaping (Bool) -> Void) {
+        if let credintal = TokenManager.shared.getCredential() {
+            let token = credintal.token!
+            let userId = credintal.userID!
+            
+            let appointmentRequestUrl = URL(string: "\(sendAppointmentRequestEndPoint)?userID=\(userId)")
+            
+            let headers: HTTPHeaders = [
+                "Connection": "keep-alive",
+                "token": token
+            ]
+            session?.request(appointmentRequestUrl!, method: .post, parameters: ["stationID": stationID, "socketID": socketID, "timeSlot": timeSlot, "appointmentDate": appointmentDate], encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).response { response in
+                print(response)
+                switch response.result {
+                case .success(_):
+                    completion(true)
+                    
+                case .failure(let error):
+                    completion(false)
                     print(error)
                 }
             }

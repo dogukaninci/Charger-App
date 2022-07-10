@@ -57,5 +57,5 @@ enum SocketType: String, Codable {
     case type2 = "Type-2"
 }
 
-typealias Station = [StationElement]
+typealias Stations = [StationElement]
 

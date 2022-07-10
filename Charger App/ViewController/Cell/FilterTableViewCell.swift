@@ -140,6 +140,7 @@ class FilterTableViewCell: UITableViewCell {
         
         allContainerView.backgroundColor = Theme.colorCharcoalGrey()
         allContainerView.layer.cornerRadius = 7
+        
     }
 
 }

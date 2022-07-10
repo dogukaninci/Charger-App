@@ -8,14 +8,14 @@
 import Foundation
 
 /// Delegate Protocol
-protocol MyDataSendingDelegateProtocol {
+protocol FilteringInfoSendingDelegateProtocol {
     func sendDataToSelectStationViewModel(chargeTypesArrSelectedData: [String]
                                           ,socketTypesArrSelectedData: [String]
                                           ,serviceTypesArrSelectedData: [String]
                                           ,sliderValue: Float)
 }
 class FilterViewModel {
-    var delegate: MyDataSendingDelegateProtocol? = nil
+    var delegate: FilteringInfoSendingDelegateProtocol? = nil
     
     var chargeTypesArrData = ["AC", "DC (Hızlı Şarj)"] // Charge Type data array
     var chargeTypesArrSelectedIndex = [Int]() // Charge Type selected cell Index array

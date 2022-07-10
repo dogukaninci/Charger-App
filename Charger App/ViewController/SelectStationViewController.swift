@@ -184,12 +184,18 @@ extension SelectStationViewController: UITableViewDelegate, UITableViewDataSourc
         cell.avaibleSocketNumberPlaceholderLabel.text = "Uygun soket sayısı:"
         cell.avaibleSocketNumberLabel.text = "\(selectStationViewModel.filteredStations[indexPath.row].socketCount! - (selectStationViewModel.filteredStations[indexPath.row].occupiedSocketCount!)) / \(selectStationViewModel.filteredStations[indexPath.row].socketCount!)"
         cell.distanceLabel.text = String(format: "%.1f", selectStationViewModel.filteredStations[indexPath.row].distanceInKM ?? 0) + " km"
+        // Remove selection effect
+        cell.selectionStyle = .none
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 200
     }
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let station = selectStationViewModel.filteredStations[indexPath.row]
+        let selectDateVC = SelectDateAndSlotViewController(viewModel: station)
+        navigationController?.pushViewController(selectDateVC, animated: true)
+    }
     
 }
 extension SelectStationViewController: UISearchBarDelegate {

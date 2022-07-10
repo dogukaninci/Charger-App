@@ -9,15 +9,15 @@ import Foundation
 
 class SelectStationViewModel {
     // All stations array
-    var stations = Station()
+    var stations = Stations()
     // Final stations array shows by table view
-    var filteredStations = Station() {
+    var filteredStations = Stations() {
         didSet {
             reloadTableView?()
         }
     }
     // Stations array for exactly one city
-    var filteredStationViaCity = Station()
+    var filteredStationViaCity = Stations()
     // Lowercased and english character transform for typo
     private var convertedSearchText = String()
     // Lowercased and english character transform for typo
@@ -54,7 +54,7 @@ class SelectStationViewModel {
     }
     /// Table view filtering by city info
     /// - Parameter stations: Station
-    private func filterByCity(stations: Station) {
+    private func filterByCity(stations: Stations) {
         filteredStationViaCity = stations.filter({ element in
             if let stationCity = element.geoLocation?.province {
                 return stationCity.hasPrefix(self.city)
@@ -76,7 +76,7 @@ class SelectStationViewModel {
         }
     }
 }
-extension SelectStationViewModel: MyDataSendingDelegateProtocol {
+extension SelectStationViewModel: FilteringInfoSendingDelegateProtocol {
     func sendDataToSelectStationViewModel(chargeTypesArrSelectedData: [String], socketTypesArrSelectedData: [String], serviceTypesArrSelectedData: [String], sliderValue: Float) {
         filterArray.removeAll()
         chargeTypesArrSelectedData.forEach({ filterArray.append($0) })
