@@ -77,9 +77,9 @@ class SelectDateAndSlotViewModel {
             self.slots = allSlots
         }
     }
-    func sendAppointmentRequest() {
-        ChargerService.shared.sendAppointmentRequest(stationID: selectedStation.id!, socketID: selectedSocket, timeSlot: selectedTimeSlot, appointmentDate: date) { bool in
-            print(bool)
+    func sendAppointmentRequest(completion: @escaping (Bool) -> Void) {
+        ChargerService.shared.sendAppointmentRequest(stationID: selectedStation.id!, socketID: selectedSocket, timeSlot: selectedTimeSlot, appointmentDate: date) { isSuccess in
+            completion(isSuccess)
         }
     }
 }

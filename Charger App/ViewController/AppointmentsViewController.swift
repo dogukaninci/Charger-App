@@ -14,7 +14,20 @@ class AppointmentsViewController: UIViewController {
     private let logo = UIImageView()
     private let createButton = UIButton()
     
+    private let tableView = UITableView()
+    
+    private let appointmentsViewModel: AppointmentsViewModel
+    
     var constraints: [NSLayoutConstraint] = []
+    
+    init() {
+        self.appointmentsViewModel = AppointmentsViewModel()
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +35,9 @@ class AppointmentsViewController: UIViewController {
         setupConstraints()
         style()
         setNavigationBarItems()
+        delegation()
+        initViewModel()
+        addObserverForCreateAppointmenReload()
     }
     override func viewDidLayoutSubviews() {
         setGradientBackground()
@@ -32,7 +48,9 @@ class AppointmentsViewController: UIViewController {
         view.addSubview(appointmentDescriptionLabel)
         view.addSubview(logo)
         view.addSubview(createButton)
+        view.addSubview(tableView)
         
+        tableView.register(AppointmentsCell.self, forCellReuseIdentifier: "appointmentsCell")
         createButton.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
     }
     /// Setups view components constraints
@@ -41,9 +59,10 @@ class AppointmentsViewController: UIViewController {
             appointmentLabel,
             appointmentDescriptionLabel,
             logo,
-            createButton
+            createButton,
+            tableView
         ].forEach {
-          $0.translatesAutoresizingMaskIntoConstraints = false
+            $0.translatesAutoresizingMaskIntoConstraints = false
         }
         constraints.append(contentsOf: [
             
@@ -59,7 +78,12 @@ class AppointmentsViewController: UIViewController {
             appointmentDescriptionLabel.topAnchor.constraint(equalTo: appointmentLabel.bottomAnchor, constant: 20),
             appointmentDescriptionLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
             appointmentDescriptionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
-    
+            
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            tableView.bottomAnchor.constraint(equalTo: createButton.topAnchor, constant: -20),
+            tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+            tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
+            
             createButton.heightAnchor.constraint(equalToConstant: 44),
             createButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
             createButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50),
@@ -86,18 +110,54 @@ class AppointmentsViewController: UIViewController {
         appointmentLabel.numberOfLines = 0
         appointmentLabel.textColor = Theme.colorWhite()
         appointmentLabel.textAlignment = .center
-
+        
         appointmentDescriptionLabel.text = "Oluşturulan randevular burada listelenir."
         appointmentDescriptionLabel.textColor = Theme.colorGrayscale()
         appointmentDescriptionLabel.font = Theme.fontNormal(size: 15)
         appointmentDescriptionLabel.numberOfLines = 0
         appointmentDescriptionLabel.textAlignment = .center
-
+        
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .singleLine
+        tableView.separatorColor = Theme.colorGrayscale()
+        // clear head inset
+        tableView.separatorInset = .zero
+        tableView.rowHeight = 44
+        tableView.layer.cornerRadius = 7
+        tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
+        tableView.isHidden = true
+        
         createButton.setTitle("RANDEVU OLUŞTUR", for: .normal)
         createButton.titleLabel?.font = Theme.fontBold(size: 15)
         createButton.setTitleColor(Theme.darkColor(), for: .normal)
         createButton.backgroundColor = Theme.colorWhite()
         createButton.layer.cornerRadius = 20
+    }
+    func initViewModel() {
+        // Get stations data
+        appointmentsViewModel.checkAppointments()
+        
+        // Reload TableView closure
+        DispatchQueue.main.async {
+            self.appointmentsViewModel.reloadTableView = { [weak self] in
+                self?.tableView.reloadData()
+                if (self?.appointmentsViewModel.appointments[0].count != 0 || self?.appointmentsViewModel.appointments[1].count != 0 ) {
+                    self?.tableView.isHidden = false
+                    self?.appointmentLabel.isHidden = true
+                    self?.appointmentDescriptionLabel.isHidden = true
+                    self?.logo.isHidden = true
+                    
+                }
+            }
+        }
+    }
+}
+extension AppointmentsViewController {
+    /// Table View Delegation
+    private func delegation() {
+        tableView.dataSource = self
+        tableView.delegate = self
     }
 }
 extension AppointmentsViewController {
@@ -118,9 +178,9 @@ extension AppointmentsViewController {
         navigationItem.title = "Randevular"
         navigationItem.titleView?.tintColor = Theme.colorWhite()
         let profileBarButton = UIBarButtonItem(image: UIImage(named: "Users"),
-                        style: .plain,
-                        target: self,
-                        action: #selector(profileButtonTapped))
+                                               style: .plain,
+                                               target: self,
+                                               action: #selector(profileButtonTapped))
         navigationItem.leftBarButtonItem = profileBarButton
         navigationItem.titleView?.tintColor = Theme.colorWhite()
         self.navigationController?.navigationBar.tintColor = Theme.colorWhite()
@@ -130,5 +190,107 @@ extension AppointmentsViewController {
     @objc func profileButtonTapped() {
         let profileVC = ProfileViewController()
         navigationController?.pushViewController(profileVC, animated: true)
+    }
+}
+extension AppointmentsViewController: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return appointmentsViewModel.appointments.count
+    }
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "GÜNCEL RANDEVULAR"
+        } else {
+            return "GEÇMİŞ RANDEVULAR"
+        }
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return appointmentsViewModel.appointments[section].count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "appointmentsCell", for: indexPath) as! AppointmentsCell
+        let appointment = appointmentsViewModel.appointments[indexPath.section][indexPath.row]
+        if indexPath.section == 0 {
+            cell.stationName.text = appointment.stationName
+            cell.socketTypeImageView.image = UIImage(named: findStationTypeImage(station: appointment))
+            cell.dateLabel.text = "\(appointment.date!),"
+            cell.timeLabel.text = appointment.time
+            cell.powerLabel.isHidden = true
+            cell.alertLabel.isHidden = false
+            cell.alertImageView.isHidden = false
+            cell.alertLabel.text = "Bildirim ayarla"
+            cell.socketNumberPlaceholderLabel.text = "Soket Numarası:"
+            cell.socketNumberLabel.text = "4"
+            cell.deleteButton.addTarget(self, action: #selector(deleteButtonTapped(sender:)), for: .touchUpInside)
+            cell.deleteButton.tag = indexPath.row
+            cell.deleteButton.isHidden = false
+            cell.selectionStyle = .none
+            return cell
+        } else {
+            cell.stationName.text = appointment.stationName
+            cell.socketTypeImageView.image = UIImage(named: findStationTypeImage(station: appointment))
+            cell.dateLabel.text = "\(appointment.date!),"
+            cell.timeLabel.text = appointment.time
+            cell.alertLabel.isHidden = true
+            cell.alertImageView.isHidden = true
+            cell.powerLabel.text = "get power"
+            cell.socketNumberPlaceholderLabel.text = "Soket Numarası:"
+            cell.socketNumberLabel.text = "3"
+            cell.deleteButton.isHidden = true
+            cell.selectionStyle = .none
+            return cell
+        }
+
+    }
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let headerView = view as? UITableViewHeaderFooterView {
+            headerView.textLabel?.textColor = Theme.colorWhite()
+        }
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 200
+    }
+}
+extension AppointmentsViewController {
+    /// Find image by searching stations charge type array
+    /// - Parameter station: StationElement
+    /// - Returns: String
+    private func findStationTypeImage(station: Appointment) -> String{
+        if let stationClass = station.stationClass {
+            if let socket = stationClass.sockets {
+                if(socket.contains(where: { $0.chargeType?.rawValue == "AC" })) {
+                    if(socket.contains(where: { $0.chargeType?.rawValue == "DC" })) {
+                        return "acdc"
+                    }
+                }
+                if(socket.contains(where: { $0.chargeType?.rawValue == "AC" })) {
+                    return "ac"
+                }
+            }
+        }
+        return "dc"
+    }
+}
+extension AppointmentsViewController {
+    @objc func deleteButtonTapped(sender: UIButton){
+        let buttonTag = sender.tag
+        appointmentsViewModel.deleteAppointment(appointmentNumber: buttonTag) { [weak self] isSuccess in
+            print(isSuccess)
+            self?.appointmentsViewModel.checkAppointments()
+        }
+    }
+}
+extension AppointmentsViewController {
+    private func addObserverForCreateAppointmenReload() {
+        // Notification Center observer adding process
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(appointmentAdded),
+                                               name: NSNotification.Name("appointmentAdded"),
+                                               object: nil)
+    }
+}
+extension AppointmentsViewController {
+    @objc func appointmentAdded() {
+        appointmentsViewModel.checkAppointments()
     }
 }

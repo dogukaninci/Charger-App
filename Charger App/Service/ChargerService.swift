@@ -33,6 +33,8 @@ class ChargerService {
     private let stationsEndPoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/stations"
     private let avaibleSlotsEndPoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/stations"
     private let sendAppointmentRequestEndPoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/appointments/make"
+    private let checkAppointmentstEndPoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/appointments"
+    private let deleteAppointmentEndPoint = "\(AuthServiceEndPoint.BASE_URL.rawValue)/appointments/cancel"
     
     
     var session: Session?
@@ -176,6 +178,56 @@ class ChargerService {
             ]
             session?.request(appointmentRequestUrl!, method: .post, parameters: ["stationID": stationID, "socketID": socketID, "timeSlot": timeSlot, "appointmentDate": appointmentDate], encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).response { response in
                 print(response)
+                switch response.result {
+                case .success(_):
+                    completion(true)
+                    
+                case .failure(let error):
+                    completion(false)
+                    print(error)
+                }
+            }
+        }
+    }
+    func checkAppointments(completion: @escaping ([Appointment]?) -> Void) {
+        if let credintal = TokenManager.shared.getCredential() {
+            let token = credintal.token!
+            let userId = credintal.userID!
+            
+            let appointmentsUrl = URL(string: "\(checkAppointmentstEndPoint)/\(userId)?userLatitude=\(userLatitude)&userLongitude=\(userLongitude)")
+            
+            let headers: HTTPHeaders = [
+                "Connection": "keep-alive",
+                "token": token
+            ]
+            
+            session?.request(appointmentsUrl!, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).responseDecodable(of: [Appointment].self) { response in
+                switch response.result {
+                    
+                case .success(let value):
+                    completion(value)
+                    
+                case .failure(let error):
+                    completion(nil)
+                    print(error)
+                }
+            }
+        }
+    }
+    /// Delete Appointment
+    func deleteApoointment(appointmentID: Int, completion: @escaping (Bool) -> Void) {
+        if let credintal = TokenManager.shared.getCredential() {
+            let token = credintal.token!
+            let userId = credintal.userID!
+            
+            let deleteAppointmentUrl = URL(string: "\(deleteAppointmentEndPoint)/\(appointmentID)?userID=\(userId)")
+            
+            let headers: HTTPHeaders = [
+                "Connection": "keep-alive",
+                "token": token
+            ]
+            
+            session?.request(deleteAppointmentUrl!, method: .delete, parameters: nil, encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200 ..< 299).response { response in
                 switch response.result {
                 case .success(_):
                     completion(true)

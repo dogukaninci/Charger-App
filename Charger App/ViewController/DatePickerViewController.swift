@@ -22,7 +22,9 @@ class DatePickerViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    deinit {
+        datePickerViewModel.saveDate(date: datePicker.date)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
@@ -43,10 +45,5 @@ class DatePickerViewController: UIViewController {
         datePicker.setValue(false, forKey: "highlightsToday")
         datePicker.setValue(Theme.colorWhite(), forKey: "textColor")
         
-        datePicker.addTarget(self, action: #selector(pickerHandler(sender:)), for: UIControl.Event.valueChanged)
-        
-    }
-    @objc func pickerHandler(sender: UIDatePicker) {
-        datePickerViewModel.saveDate(date: sender.date)
     }
 }

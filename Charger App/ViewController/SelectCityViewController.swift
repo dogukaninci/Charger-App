@@ -12,9 +12,7 @@ class SelectCityViewController: UIViewController {
     private let searchBar = UISearchBar()
     private let tableView = UITableView()
     
-    lazy var selectCityViewModel = {
-         SelectCityViewModel()
-     }()
+    var selectCityViewModel = SelectCityViewModel()
     
     private var searchTextCharCount = Int()
     

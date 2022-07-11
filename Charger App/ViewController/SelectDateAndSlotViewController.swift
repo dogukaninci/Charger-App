@@ -72,14 +72,14 @@ class SelectDateAndSlotViewController: UIViewController {
     
     private let confirmButton = UIButton()
     
-    private let selectDateViewModel: SelectDateAndSlotViewModel
+    private let selectDateAndSlotViewModel: SelectDateAndSlotViewModel
     
     private var constraints: [NSLayoutConstraint] = []
     
     init(viewModel: StationElement) {
         // Create SelectDateViewModel with station info coming from
         //SelectStationViewController to SelectDateViewController seque
-        self.selectDateViewModel = SelectDateAndSlotViewModel(station: viewModel)
+        self.selectDateAndSlotViewModel = SelectDateAndSlotViewModel(station: viewModel)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -126,7 +126,7 @@ class SelectDateAndSlotViewController: UIViewController {
         confirmButton.addTarget(self, action: #selector(confirmTapped(sender:)), for: .touchUpInside)
         
         for index in 0...23 {
-            let timeLabelView = TimeLabelView(timeSlot: selectDateViewModel.timeArray[index])
+            let timeLabelView = TimeLabelView(timeSlot: selectDateAndSlotViewModel.timeArray[index])
             timeLabelView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewInStack1Tapped(sender:))))
             timeClassArraySocket1.append(timeLabelView)
             stackView1Vertical.addArrangedSubview(timeLabelView)
@@ -138,7 +138,7 @@ class SelectDateAndSlotViewController: UIViewController {
                 timeLabelView.timeLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1 / 3, constant: -15),
                 timeLabelView.timeLabel.heightAnchor.constraint(equalToConstant: 44)
             ])
-            let timeLabelView2 = TimeLabelView(timeSlot: selectDateViewModel.timeArray[index])
+            let timeLabelView2 = TimeLabelView(timeSlot: selectDateAndSlotViewModel.timeArray[index])
             timeLabelView2.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewInStack2Tapped(sender:))))
             timeClassArraySocket2.append(timeLabelView2)
             stackView2Vertical.addArrangedSubview(timeLabelView2)
@@ -150,7 +150,7 @@ class SelectDateAndSlotViewController: UIViewController {
                 timeLabelView2.timeLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1 / 3, constant: -15),
                 timeLabelView2.timeLabel.heightAnchor.constraint(equalToConstant: 44)
             ])
-            let timeLabelView3 = TimeLabelView(timeSlot: selectDateViewModel.timeArray[index])
+            let timeLabelView3 = TimeLabelView(timeSlot: selectDateAndSlotViewModel.timeArray[index])
             timeLabelView3.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewInStack3Tapped(sender:))))
             timeClassArraySocket3.append(timeLabelView3)
             stackView3Vertical.addArrangedSubview(timeLabelView3)
@@ -253,7 +253,7 @@ class SelectDateAndSlotViewController: UIViewController {
         appointmentDateLabel.textAlignment = .left
         appointmentDateLabel.font = Theme.fontBold(size: 17)
         
-        datePickerLabel.text = selectDateViewModel.dateForDisplay
+        datePickerLabel.text = selectDateAndSlotViewModel.dateForDisplay
         datePickerLabel.textColor = Theme.colorWhite()
         datePickerLabel.textAlignment = .right
         datePickerLabel.font = Theme.fontNormal(size: 17)
@@ -302,21 +302,21 @@ class SelectDateAndSlotViewController: UIViewController {
     
     func initViewModel() {
         // Get stations data
-        selectDateViewModel.fetchAvaibleTimes()
+        selectDateAndSlotViewModel.fetchAvaibleTimes()
         
         // Reload slots closure
         DispatchQueue.main.async {
-            self.selectDateViewModel.reloadSlots = { [weak self] in
-                self?.updateSlots(slots: (self?.selectDateViewModel.slots)!)
-                self?.datePickerLabel.text = self?.selectDateViewModel.dateForDisplay
+            self.selectDateAndSlotViewModel.reloadSlots = { [weak self] in
+                self?.updateSlots(slots: (self?.selectDateAndSlotViewModel.slots)!)
+                self?.datePickerLabel.text = self?.selectDateAndSlotViewModel.dateForDisplay
             }
-            self.selectDateViewModel.reFetchData = { [weak self] in
-                self?.selectDateViewModel.fetchAvaibleTimes()
+            self.selectDateAndSlotViewModel.reFetchData = { [weak self] in
+                self?.selectDateAndSlotViewModel.fetchAvaibleTimes()
             }
         }
     }
     func updateSlots(slots: [[Bool]]) {
-        if(selectDateViewModel.selectedStation.sockets?.count == 1) {
+        if(selectDateAndSlotViewModel.selectedStation.sockets?.count == 1) {
             socket2Label.isHidden = true
             type2Label.isHidden = true
             socket3Label.isHidden = true
@@ -324,7 +324,7 @@ class SelectDateAndSlotViewController: UIViewController {
             stackView2Vertical.arrangedSubviews.forEach({ $0.alpha = 0 })
             stackView3Vertical.arrangedSubviews.forEach({ $0.alpha = 0 })
         }
-        if(selectDateViewModel.selectedStation.sockets?.count == 2) {
+        if(selectDateAndSlotViewModel.selectedStation.sockets?.count == 2) {
             socket3Label.isHidden = true
             type3Label.isHidden = true
             stackView3Vertical.arrangedSubviews.forEach({ $0.alpha = 0 })
@@ -332,26 +332,33 @@ class SelectDateAndSlotViewController: UIViewController {
         
         for (index, item) in slots.enumerated() {
             if(index == 0 && item.count != 0) {
-                type1Label.text = "\(selectDateViewModel.selectedStation.sockets![0].chargeType!) * \(selectDateViewModel.selectedStation.sockets![0].socketType!)"
+                type1Label.text = "\(selectDateAndSlotViewModel.selectedStation.sockets![0].chargeType!) * \(selectDateAndSlotViewModel.selectedStation.sockets![0].socketType!)"
                 item.enumerated().forEach { (index,bool) in
                     if(bool == true) {
                         timeClassArraySocket1[index].timeLabel.backgroundColor = .clear
+                    } else {
+                        timeClassArraySocket1[index].timeLabel.backgroundColor = Theme.colorCharcoalGrey()
                     }
                 }
             }
             if(index == 1 && item.count != 0) {
-                type2Label.text = "\(selectDateViewModel.selectedStation.sockets![1].chargeType!) * \(selectDateViewModel.selectedStation.sockets![1].socketType!)"
+                type2Label.text = "\(selectDateAndSlotViewModel.selectedStation.sockets![1].chargeType!) * \(selectDateAndSlotViewModel.selectedStation.sockets![1].socketType!)"
                 item.enumerated().forEach { (index,bool) in
                     if(bool == true) {
                         timeClassArraySocket2[index].timeLabel.backgroundColor = .clear
+                    }else {
+                        timeClassArraySocket2[index].timeLabel.backgroundColor = Theme.colorCharcoalGrey()
                     }
                 }
             }
             if(index == 2 && item.count != 0) {
-                type3Label.text = "\(selectDateViewModel.selectedStation.sockets![2].chargeType!) * \(selectDateViewModel.selectedStation.sockets![2].socketType!)"
+                type3Label.text = "\(selectDateAndSlotViewModel.selectedStation.sockets![2].chargeType!) * \(selectDateAndSlotViewModel.selectedStation.sockets![2].socketType!)"
                 item.enumerated().forEach { (index,bool) in
                     if(bool == true) {
                         timeClassArraySocket3[index].timeLabel.backgroundColor = .clear
+                    }
+                    else {
+                        timeClassArraySocket3[index].timeLabel.backgroundColor = Theme.colorCharcoalGrey()
                     }
                 }
             }
@@ -369,24 +376,24 @@ class SelectDateAndSlotViewController: UIViewController {
 extension SelectDateAndSlotViewController {
     @objc func viewInStack1Tapped(sender: UITapGestureRecognizer) {
         if let senderView = sender.view as? TimeLabelView {
-            selectDateViewModel.selectedTimeSlot = senderView.timeLabel.text!
-            selectDateViewModel.selectedSocket = selectDateViewModel.selectedStation.sockets![0].socketID!
+            selectDateAndSlotViewModel.selectedTimeSlot = senderView.timeLabel.text!
+            selectDateAndSlotViewModel.selectedSocket = selectDateAndSlotViewModel.selectedStation.sockets![0].socketID!
             senderView.timeLabel.layer.borderColor = Theme.colorPrimary().cgColor
             senderView.timeLabel.backgroundColor = Theme.darkColor()
         }
     }
     @objc func viewInStack2Tapped(sender: UITapGestureRecognizer) {
         if let senderView = sender.view as? TimeLabelView {
-            selectDateViewModel.selectedTimeSlot = senderView.timeLabel.text!
-            selectDateViewModel.selectedSocket = selectDateViewModel.selectedStation.sockets![1].socketID!
+            selectDateAndSlotViewModel.selectedTimeSlot = senderView.timeLabel.text!
+            selectDateAndSlotViewModel.selectedSocket = selectDateAndSlotViewModel.selectedStation.sockets![1].socketID!
             senderView.timeLabel.layer.borderColor = Theme.colorPrimary().cgColor
             senderView.timeLabel.backgroundColor = Theme.darkColor()
         }
     }
     @objc func viewInStack3Tapped(sender: UITapGestureRecognizer) {
         if let senderView = sender.view as? TimeLabelView {
-            selectDateViewModel.selectedTimeSlot = senderView.timeLabel.text!
-            selectDateViewModel.selectedSocket = selectDateViewModel.selectedStation.sockets![2].socketID!
+            selectDateAndSlotViewModel.selectedTimeSlot = senderView.timeLabel.text!
+            selectDateAndSlotViewModel.selectedSocket = selectDateAndSlotViewModel.selectedStation.sockets![2].socketID!
             senderView.timeLabel.layer.borderColor = Theme.colorPrimary().cgColor
             senderView.timeLabel.backgroundColor = Theme.darkColor()
         }
@@ -403,7 +410,7 @@ extension SelectDateAndSlotViewController {
         titleLabel.textColor = Theme.colorWhite()
         let subtitleLabel = UILabel()
         subtitleLabel.textAlignment = .center
-        subtitleLabel.text = selectDateViewModel.selectedStation.stationName
+        subtitleLabel.text = selectDateAndSlotViewModel.selectedStation.stationName
         subtitleLabel.font = Theme.fontNormal(size: 15)
         subtitleLabel.textColor = Theme.colorWhite()
         let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
@@ -418,12 +425,16 @@ extension SelectDateAndSlotViewController {
     @objc func datePickerTapped(sender: UITapGestureRecognizer) {
         let datePickerVC = DatePickerViewController()
         datePickerVC.modalPresentationStyle = .pageSheet
-        datePickerVC.datePickerViewModel.delegate = self.selectDateViewModel
+        datePickerVC.datePickerViewModel.delegate = self.selectDateAndSlotViewModel
         navigationController?.pushViewController(datePickerVC, animated: true)
     }
 }
 extension SelectDateAndSlotViewController {
     @objc func confirmTapped(sender: UIButton) {
-        selectDateViewModel.sendAppointmentRequest()
+        selectDateAndSlotViewModel.sendAppointmentRequest { isSuccess in
+            if isSuccess {
+                NotificationCenter.default.post(name: NSNotification.Name("appointmentAdded"), object: nil)
+            }
+        }
     }
 }
