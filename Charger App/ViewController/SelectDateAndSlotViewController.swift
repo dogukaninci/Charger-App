@@ -377,7 +377,8 @@ extension SelectDateAndSlotViewController {
     @objc func viewInStack1Tapped(sender: UITapGestureRecognizer) {
         if let senderView = sender.view as? TimeLabelView {
             selectDateAndSlotViewModel.selectedTimeSlot = senderView.timeLabel.text!
-            selectDateAndSlotViewModel.selectedSocket = selectDateAndSlotViewModel.selectedStation.sockets![0].socketID!
+            selectDateAndSlotViewModel.selectedSocketID = selectDateAndSlotViewModel.selectedStation.sockets![0].socketID!
+            selectDateAndSlotViewModel.selectedSocketIndex = 0
             senderView.timeLabel.layer.borderColor = Theme.colorPrimary().cgColor
             senderView.timeLabel.backgroundColor = Theme.darkColor()
         }
@@ -385,7 +386,8 @@ extension SelectDateAndSlotViewController {
     @objc func viewInStack2Tapped(sender: UITapGestureRecognizer) {
         if let senderView = sender.view as? TimeLabelView {
             selectDateAndSlotViewModel.selectedTimeSlot = senderView.timeLabel.text!
-            selectDateAndSlotViewModel.selectedSocket = selectDateAndSlotViewModel.selectedStation.sockets![1].socketID!
+            selectDateAndSlotViewModel.selectedSocketID = selectDateAndSlotViewModel.selectedStation.sockets![1].socketID!
+            selectDateAndSlotViewModel.selectedSocketIndex = 1
             senderView.timeLabel.layer.borderColor = Theme.colorPrimary().cgColor
             senderView.timeLabel.backgroundColor = Theme.darkColor()
         }
@@ -393,7 +395,8 @@ extension SelectDateAndSlotViewController {
     @objc func viewInStack3Tapped(sender: UITapGestureRecognizer) {
         if let senderView = sender.view as? TimeLabelView {
             selectDateAndSlotViewModel.selectedTimeSlot = senderView.timeLabel.text!
-            selectDateAndSlotViewModel.selectedSocket = selectDateAndSlotViewModel.selectedStation.sockets![2].socketID!
+            selectDateAndSlotViewModel.selectedSocketID = selectDateAndSlotViewModel.selectedStation.sockets![2].socketID!
+            selectDateAndSlotViewModel.selectedSocketIndex = 2
             senderView.timeLabel.layer.borderColor = Theme.colorPrimary().cgColor
             senderView.timeLabel.backgroundColor = Theme.darkColor()
         }
@@ -410,9 +413,9 @@ extension SelectDateAndSlotViewController {
         titleLabel.textColor = Theme.colorWhite()
         let subtitleLabel = UILabel()
         subtitleLabel.textAlignment = .center
-        subtitleLabel.text = selectDateAndSlotViewModel.selectedStation.stationName
-        subtitleLabel.font = Theme.fontNormal(size: 15)
-        subtitleLabel.textColor = Theme.colorWhite()
+        subtitleLabel.text = selectDateAndSlotViewModel.selectedStation.stationName?.localizedUppercase
+        subtitleLabel.font = Theme.fontNormal(size: 12)
+        subtitleLabel.textColor = Theme.colorGrayscale()
         let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         stackView.axis = .vertical
         
@@ -431,10 +434,10 @@ extension SelectDateAndSlotViewController {
 }
 extension SelectDateAndSlotViewController {
     @objc func confirmTapped(sender: UIButton) {
-        selectDateAndSlotViewModel.sendAppointmentRequest { isSuccess in
-            if isSuccess {
-                NotificationCenter.default.post(name: NSNotification.Name("appointmentAdded"), object: nil)
-            }
-        }
+        let detailVC = AppointmentDetailViewController(station: selectDateAndSlotViewModel.selectedStation,
+                                                       socketIndex: selectDateAndSlotViewModel.selectedSocketIndex,
+                                                       timeSlot: selectDateAndSlotViewModel.selectedTimeSlot,
+                                                       appointmentDate: selectDateAndSlotViewModel.date)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }

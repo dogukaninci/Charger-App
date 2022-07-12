@@ -86,7 +86,6 @@ class SelectCityViewController: UIViewController {
         // clear head inset
         tableView.separatorInset = .zero
         tableView.rowHeight = 44
-        tableView.tableFooterView?.backgroundColor = .red
         
     }
     func initViewModel() {
