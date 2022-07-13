@@ -51,7 +51,7 @@ class FilterViewController: UIViewController {
     
     let filterViewModel: FilterViewModel
     
-    init(viewModel: [String]) {
+    init(viewModel: FilterDataSender) {
         // Create FilterViewModel with filtered info coming from
         //SelectStationViewController to FilterViewController seque
         self.filterViewModel = FilterViewModel(filtered: viewModel)
@@ -93,6 +93,8 @@ class FilterViewController: UIViewController {
         servicesCollectionView.register(FilterViewControllerCell.self, forCellWithReuseIdentifier: "filterViewControllerCell")
         
         slideBar.addTarget(self, action: #selector(sliderValueChanged), for: UIControl.Event.valueChanged)
+        
+        filterButton.addTarget(self, action: #selector(filterTapped(sender:)), for: .touchUpInside)
     }
     /// Setups view components constraints
     private func setupConstraints() {
@@ -245,19 +247,19 @@ extension FilterViewController {
 extension FilterViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == self.chargeTypeCollectionView {
-            return filterViewModel.chargeTypesArrData.count
+            return filterViewModel.filterDataSender.chargeTypesArrData.count
         } else if collectionView == self.socketTypeCollectionView {
-            return filterViewModel.socketTypesArrData.count
+            return filterViewModel.filterDataSender.socketTypesArrData.count
         } else {
-            return filterViewModel.serviceTypesArrData.count
+            return filterViewModel.filterDataSender.serviceTypesArrData.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == self.chargeTypeCollectionView {
             let cell = chargeTypeCollectionView.dequeueReusableCell(withReuseIdentifier: "filterViewControllerCell", for: indexPath) as! FilterViewControllerCell
-            cell.filterTitle.text = filterViewModel.chargeTypesArrData[indexPath.row]
-            if filterViewModel.chargeTypesArrSelectedIndex.contains(indexPath.row) {
+            cell.filterTitle.text = filterViewModel.filterDataSender.chargeTypesArrData[indexPath.row]
+            if filterViewModel.filterDataSender.chargeTypesArrSelectedIndex.contains(indexPath.row) {
                 cell.layer.borderColor = Theme.colorPrimary().cgColor
             } else {
                 cell.layer.borderColor = Theme.colorGrayscale().cgColor
@@ -265,8 +267,8 @@ extension FilterViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         } else if collectionView == self.socketTypeCollectionView {
             let cell = socketTypeCollectionView.dequeueReusableCell(withReuseIdentifier: "filterViewControllerCell", for: indexPath) as! FilterViewControllerCell
-            cell.filterTitle.text = filterViewModel.socketTypesArrData[indexPath.row]
-            if filterViewModel.socketTypesArrSelectedIndex.contains(indexPath.row) {
+            cell.filterTitle.text = filterViewModel.filterDataSender.socketTypesArrData[indexPath.row]
+            if filterViewModel.filterDataSender.socketTypesArrSelectedIndex.contains(indexPath.row) {
                 cell.layer.borderColor = Theme.colorPrimary().cgColor
             } else {
                 cell.layer.borderColor = Theme.colorGrayscale().cgColor
@@ -274,8 +276,8 @@ extension FilterViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         } else {
             let cell = servicesCollectionView.dequeueReusableCell(withReuseIdentifier: "filterViewControllerCell", for: indexPath) as! FilterViewControllerCell
-            cell.filterTitle.text = filterViewModel.serviceTypesArrData[indexPath.row]
-            if filterViewModel.serviceTypesArrSelectedIndex.contains(indexPath.row) {
+            cell.filterTitle.text = filterViewModel.filterDataSender.serviceTypesArrData[indexPath.row]
+            if filterViewModel.filterDataSender.serviceTypesArrSelectedIndex.contains(indexPath.row) {
                 cell.layer.borderColor = Theme.colorPrimary().cgColor
             } else {
                 cell.layer.borderColor = Theme.colorGrayscale().cgColor
@@ -285,48 +287,48 @@ extension FilterViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == self.chargeTypeCollectionView {
-            let size = (self.filterViewModel.chargeTypesArrData[indexPath.row] as NSString).size(withAttributes: [NSAttributedString.Key.font: Theme.fontNormal(size: 15)])
+            let size = (self.filterViewModel.filterDataSender.chargeTypesArrData[indexPath.row] as NSString).size(withAttributes: [NSAttributedString.Key.font: Theme.fontNormal(size: 15)])
             return CGSize(width: size.width + 30, height: size.height + 15)
         } else if collectionView == self.socketTypeCollectionView {
-            let size = (self.filterViewModel.socketTypesArrData[indexPath.row] as NSString).size(withAttributes: [NSAttributedString.Key.font: Theme.fontNormal(size: 15)])
+            let size = (self.filterViewModel.filterDataSender.socketTypesArrData[indexPath.row] as NSString).size(withAttributes: [NSAttributedString.Key.font: Theme.fontNormal(size: 15)])
             return CGSize(width: size.width + 30, height: size.height + 15)
         } else {
-            let size = (self.filterViewModel.serviceTypesArrData[indexPath.row] as NSString).size(withAttributes: [NSAttributedString.Key.font: Theme.fontNormal(size: 15)])
+            let size = (self.filterViewModel.filterDataSender.serviceTypesArrData[indexPath.row] as NSString).size(withAttributes: [NSAttributedString.Key.font: Theme.fontNormal(size: 15)])
             return CGSize(width: size.width + 30, height: size.height + 15)
         }
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == self.chargeTypeCollectionView {
-            let strData = filterViewModel.chargeTypesArrData[indexPath.row]
-            if filterViewModel.chargeTypesArrSelectedIndex.contains(indexPath.row) {
-                filterViewModel.chargeTypesArrSelectedIndex = filterViewModel.chargeTypesArrSelectedIndex.filter { $0 != indexPath.row}
-                filterViewModel.chargeTypesArrSelectedData = filterViewModel.chargeTypesArrSelectedData.filter { $0 != strData}
+            let strData = filterViewModel.filterDataSender.chargeTypesArrData[indexPath.row]
+            if filterViewModel.filterDataSender.chargeTypesArrSelectedIndex.contains(indexPath.row) {
+                filterViewModel.filterDataSender.chargeTypesArrSelectedIndex = filterViewModel.filterDataSender.chargeTypesArrSelectedIndex.filter { $0 != indexPath.row}
+                filterViewModel.filterDataSender.chargeTypesArrSelectedData = filterViewModel.filterDataSender.chargeTypesArrSelectedData.filter { $0 != strData}
             }
             else {
-                filterViewModel.chargeTypesArrSelectedIndex.append(indexPath.row)
-                filterViewModel.chargeTypesArrSelectedData.append(strData)
+                filterViewModel.filterDataSender.chargeTypesArrSelectedIndex.append(indexPath.row)
+                filterViewModel.filterDataSender.chargeTypesArrSelectedData.append(strData)
             }
             collectionView.reloadData()
         } else if collectionView == self.socketTypeCollectionView {
-            let strData = filterViewModel.socketTypesArrData[indexPath.row]
-            if filterViewModel.socketTypesArrSelectedIndex.contains(indexPath.row) {
-                filterViewModel.socketTypesArrSelectedIndex = filterViewModel.socketTypesArrSelectedIndex.filter { $0 != indexPath.row}
-                filterViewModel.socketTypesArrSelectedData = filterViewModel.socketTypesArrSelectedData.filter { $0 != strData}
+            let strData = filterViewModel.filterDataSender.socketTypesArrData[indexPath.row]
+            if filterViewModel.filterDataSender.socketTypesArrSelectedIndex.contains(indexPath.row) {
+                filterViewModel.filterDataSender.socketTypesArrSelectedIndex = filterViewModel.filterDataSender.socketTypesArrSelectedIndex.filter { $0 != indexPath.row}
+                filterViewModel.filterDataSender.socketTypesArrSelectedData = filterViewModel.filterDataSender.socketTypesArrSelectedData.filter { $0 != strData}
             }
             else {
-                filterViewModel.socketTypesArrSelectedIndex.append(indexPath.row)
-                filterViewModel.socketTypesArrSelectedData.append(strData)
+                filterViewModel.filterDataSender.socketTypesArrSelectedIndex.append(indexPath.row)
+                filterViewModel.filterDataSender.socketTypesArrSelectedData.append(strData)
             }
             collectionView.reloadData()
         } else {
-            let strData = filterViewModel.serviceTypesArrData[indexPath.row]
-            if filterViewModel.serviceTypesArrSelectedIndex.contains(indexPath.row) {
-                filterViewModel.serviceTypesArrSelectedIndex = filterViewModel.serviceTypesArrSelectedIndex.filter { $0 != indexPath.row}
-                filterViewModel.serviceTypesArrSelectedData = filterViewModel.serviceTypesArrSelectedData.filter { $0 != strData}
+            let strData = filterViewModel.filterDataSender.serviceTypesArrData[indexPath.row]
+            if filterViewModel.filterDataSender.serviceTypesArrSelectedIndex.contains(indexPath.row) {
+                filterViewModel.filterDataSender.serviceTypesArrSelectedIndex = filterViewModel.filterDataSender.serviceTypesArrSelectedIndex.filter { $0 != indexPath.row}
+                filterViewModel.filterDataSender.serviceTypesArrSelectedData = filterViewModel.filterDataSender.serviceTypesArrSelectedData.filter { $0 != strData}
             }
             else {
-                filterViewModel.serviceTypesArrSelectedIndex.append(indexPath.row)
-                filterViewModel.serviceTypesArrSelectedData.append(strData)
+                filterViewModel.filterDataSender.serviceTypesArrSelectedIndex.append(indexPath.row)
+                filterViewModel.filterDataSender.serviceTypesArrSelectedData.append(strData)
             }
             collectionView.reloadData()
         }
@@ -334,6 +336,11 @@ extension FilterViewController: UICollectionViewDelegate, UICollectionViewDataSo
 }
 extension FilterViewController {
     @objc func sliderValueChanged() {
-        filterViewModel.sliderValue = self.slideBar.value
+        filterViewModel.filterDataSender.sliderValue = self.slideBar.value
+    }
+}
+extension FilterViewController {
+    @objc func filterTapped(sender: UIButton) {
+        navigationController?.popViewController(animated: true)
     }
 }

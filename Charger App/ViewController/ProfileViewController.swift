@@ -57,27 +57,27 @@ class ProfileViewController: UIViewController {
         }
         constraints.append(contentsOf: [
             
-            logo.widthAnchor.constraint(equalToConstant: 120),
-            logo.heightAnchor.constraint(equalToConstant: 120),
+            logo.widthAnchor.constraint(equalToConstant: 170),
+            logo.heightAnchor.constraint(equalToConstant: 170),
             logo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 70),
             logo.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            containerView.heightAnchor.constraint(equalToConstant: 100),
-            containerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
-            containerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
+            containerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+            containerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            containerView.bottomAnchor.constraint(equalTo: iDPlaceholderLabel.bottomAnchor, constant: 25),
             
-            ePostaPlaceholderLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 20),
-            ePostaPlaceholderLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
+            ePostaPlaceholderLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 25),
+            ePostaPlaceholderLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 15),
             
-            iDPlaceholderLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
-            iDPlaceholderLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
+            iDPlaceholderLabel.topAnchor.constraint(equalTo: ePostaPlaceholderLabel.bottomAnchor, constant: 25),
+            iDPlaceholderLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 15),
             
-            ePostaLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 20),
-            ePostaLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -10),
+            ePostaLabel.centerYAnchor.constraint(equalTo: ePostaPlaceholderLabel.centerYAnchor),
+            ePostaLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -15),
             
-            iDLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
-            iDLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -10),
+            iDLabel.centerYAnchor.constraint(equalTo: iDPlaceholderLabel.centerYAnchor, constant: 1),
+            iDLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -15),
             
             logoutButton.heightAnchor.constraint(equalToConstant: 44),
             logoutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
@@ -96,7 +96,7 @@ class ProfileViewController: UIViewController {
         self.view.layer.insertSublayer(gl, at:0)
     }
     private func style(){
-        if let profileLogo = UIImage(named: "profileLogo") {
+        if let profileLogo = UIImage(named: "profile") {
             logo.image = profileLogo
         }
         
@@ -118,9 +118,9 @@ class ProfileViewController: UIViewController {
         ePostaLabel.textColor = Theme.colorWhite()
         ePostaLabel.textAlignment = .right
         
-        iDLabel.text = LoginViewModel.shared.deviceID
+        iDLabel.text = TokenManager.shared.deviceUDID
         iDLabel.textColor = Theme.colorWhite()
-        iDLabel.font = Theme.fontBold(size: 15)
+        iDLabel.font = Theme.fontBold(size: 11)
         iDLabel.numberOfLines = 1
         iDLabel.textAlignment = .right
         
@@ -132,6 +132,10 @@ class ProfileViewController: UIViewController {
         
         containerView.backgroundColor = Theme.navBarColor()
         containerView.layer.cornerRadius = 10
+//        containerView.layer.shadowColor = Theme.darkColor().cgColor
+//        containerView.layer.shadowOpacity = 1
+//        containerView.layer.shadowOffset = .zero
+//        containerView.layer.shadowRadius = 10
     }
 }
 extension ProfileViewController {

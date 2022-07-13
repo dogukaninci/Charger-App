@@ -32,11 +32,12 @@ class SelectStationViewModel {
     // Closure for reload collection view
     var reloadCollectionView: (() -> Void)?
     
-    var filterArray = [String]() {
+    var collectionViewDataArray = [String]() {
         didSet {
             reloadCollectionView?()
         }
     }
+    var filterDataSender = FilterDataSender()
     
     init(city: String) {
         // City info coming from SelectCityViewController
@@ -77,11 +78,68 @@ class SelectStationViewModel {
     }
 }
 extension SelectStationViewModel: FilteringInfoSendingDelegateProtocol {
-    func sendDataToSelectStationViewModel(chargeTypesArrSelectedData: [String], socketTypesArrSelectedData: [String], serviceTypesArrSelectedData: [String], sliderValue: Float) {
-        filterArray.removeAll()
-        chargeTypesArrSelectedData.forEach({ filterArray.append($0) })
-        socketTypesArrSelectedData.forEach({ filterArray.append($0) })
-        serviceTypesArrSelectedData.forEach({ filterArray.append($0) })
+    func sendDataToSelectStationViewModel(sendData: FilterDataSender) {
+        self.filterDataSender = sendData
+        filteredStations = filteredStationViaCity
+        collectionViewDataArray.removeAll()
         
+        filterDataSender.chargeTypesArrSelectedData.forEach { str in
+            collectionViewDataArray.append(str)
+        }
+        filterDataSender.socketTypesArrSelectedData.forEach { str in
+            collectionViewDataArray.append(str)
+        }
+        filterDataSender.serviceTypesArrSelectedData.forEach { str in
+            collectionViewDataArray.append(str)
+        }
+        
+        makeFilterTableView()
     }
 }
+extension SelectStationViewModel {
+    private func makeFilterTableView() {
+        filteredStations = filteredStationViaCity
+        filterDataSender.chargeTypesArrSelectedData.forEach { item in
+            filteredStations = filteredStations.filter { (station) -> Bool in
+                return station.sockets!.filter({ (socket) -> Bool in
+                    return socket.chargeType!.rawValue == item
+                }).count > 0
+            }
+        }
+        filterDataSender.socketTypesArrSelectedData.forEach { item in
+            filteredStations = filteredStations.filter { (station) -> Bool in
+                return station.sockets!.filter({ (socket) -> Bool in
+                    return socket.socketType!.rawValue == item
+                }).count > 0
+            }
+        }
+        filterDataSender.serviceTypesArrSelectedData.forEach { item in
+            filteredStations = filteredStations.filter { (station) -> Bool in
+                return station.services!.filter({ (service) -> Bool in
+                    return service.rawValue == item
+                }).count > 0
+            }
+        }
+    }
+}
+extension SelectStationViewModel {
+    func removeItem(item: String) {
+        if filterDataSender.chargeTypesArrSelectedData.contains(item) {
+            let index = filterDataSender.chargeTypesArrSelectedData.firstIndex(of: item)
+            filterDataSender.chargeTypesArrSelectedData.remove(at: index!)
+            filterDataSender.chargeTypesArrSelectedIndex.remove(at: index!)
+        }
+        if filterDataSender.socketTypesArrSelectedData.contains(item) {
+            let index = filterDataSender.socketTypesArrSelectedData.firstIndex(of: item)
+            filterDataSender.socketTypesArrSelectedData.remove(at: index!)
+            filterDataSender.socketTypesArrSelectedIndex.remove(at: index!)
+        }
+        if filterDataSender.serviceTypesArrSelectedData.contains(item) {
+            let index = filterDataSender.serviceTypesArrSelectedData.firstIndex(of: item)
+            filterDataSender.serviceTypesArrSelectedData.remove(at: index!)
+            filterDataSender.serviceTypesArrSelectedIndex.remove(at: index!)
+        }
+        makeFilterTableView()
+    }
+}
+

@@ -6,8 +6,12 @@
 //
 
 import Foundation
+import UIKit
 
 class TokenManager {
+    
+    let deviceUDID = UIDevice.current.identifierForVendor!.uuidString
+    
     // Singleton
     static let shared = TokenManager()
     

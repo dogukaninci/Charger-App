@@ -213,29 +213,31 @@ extension AppointmentsViewController: UITableViewDelegate, UITableViewDataSource
         if indexPath.section == 0 {
             cell.stationName.text = appointment.stationName
             cell.socketTypeImageView.image = UIImage(named: findStationTypeImage(station: appointment))
-            cell.dateLabel.text = "\(appointment.date!),"
+            cell.dateLabel.text = appointment.date!.convertDate() + ","
             cell.timeLabel.text = appointment.time
             cell.powerLabel.isHidden = true
             cell.alertLabel.isHidden = false
             cell.alertImageView.isHidden = false
-            cell.alertLabel.text = "Bildirim ayarla"
+            cell.alertLabel.text = "30 dk. önce"
             cell.socketNumberPlaceholderLabel.text = "Soket Numarası:"
-            cell.socketNumberLabel.text = "4"
+            cell.socketNumberLabel.text = String(appointmentsViewModel.findSocketInfo(section: indexPath.section, row: indexPath.row).socketNumber!)
             cell.deleteButton.addTarget(self, action: #selector(deleteButtonTapped(sender:)), for: .touchUpInside)
             cell.deleteButton.tag = indexPath.row
+            cell.socketTypeLabel.text = appointmentsViewModel.getSocketTypeInfo(section: indexPath.section, row: indexPath.row)
             cell.deleteButton.isHidden = false
             cell.selectionStyle = .none
             return cell
         } else {
             cell.stationName.text = appointment.stationName
             cell.socketTypeImageView.image = UIImage(named: findStationTypeImage(station: appointment))
-            cell.dateLabel.text = "\(appointment.date!),"
+            cell.dateLabel.text = appointment.date!.convertDate() + ","
             cell.timeLabel.text = appointment.time
             cell.alertLabel.isHidden = true
             cell.alertImageView.isHidden = true
-            cell.powerLabel.text = "get power"
+            cell.powerLabel.text = appointmentsViewModel.getPowerInfo(section: indexPath.section, row: indexPath.row)
             cell.socketNumberPlaceholderLabel.text = "Soket Numarası:"
-            cell.socketNumberLabel.text = "3"
+            cell.socketNumberLabel.text = String(appointmentsViewModel.findSocketInfo(section: indexPath.section, row: indexPath.row).socketNumber!)
+            cell.socketTypeLabel.text = appointmentsViewModel.getSocketTypeInfo(section: indexPath.section, row: indexPath.row)
             cell.deleteButton.isHidden = true
             cell.selectionStyle = .none
             return cell
@@ -244,7 +246,7 @@ extension AppointmentsViewController: UITableViewDelegate, UITableViewDataSource
     }
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerView = view as? UITableViewHeaderFooterView {
-            headerView.textLabel?.textColor = Theme.colorWhite()
+            headerView.textLabel?.textColor = Theme.colorGrayscale()
         }
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -256,7 +258,7 @@ extension AppointmentsViewController {
     /// - Parameter station: StationElement
     /// - Returns: String
     private func findStationTypeImage(station: Appointment) -> String{
-        if let stationClass = station.stationClass {
+        if let stationClass = station.station {
             if let socket = stationClass.sockets {
                 if(socket.contains(where: { $0.chargeType?.rawValue == "AC" })) {
                     if(socket.contains(where: { $0.chargeType?.rawValue == "DC" })) {

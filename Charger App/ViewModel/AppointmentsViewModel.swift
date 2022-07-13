@@ -50,4 +50,42 @@ class AppointmentsViewModel {
             })
         }
     }
+    func findSocketInfo(section: Int, row: Int) -> Socket {
+        var socketInfo: Socket?
+        appointments[section][row].station!.sockets!.forEach { socket in
+            if socket.socketID == appointments[section][row].socketID {
+                socketInfo = socket
+            }
+        }
+        return socketInfo!
+    }
+    func getPowerInfo(section: Int, row: Int) -> String {
+        var socketInfo: Socket?
+        appointments[section][row].station!.sockets!.forEach { socket in
+            if socket.socketID == appointments[section][row].socketID {
+                socketInfo = socket
+            }
+        }
+        let power = String(socketInfo!.power!)
+        let powerUnit = String(socketInfo!.powerUnit!.rawValue)
+        return power + " " + powerUnit
+    }
+    func getSocketTypeInfo(section: Int, row: Int) -> String {
+        var socketInfo: Socket?
+        appointments[section][row].station!.sockets!.forEach { socket in
+            if socket.socketID == appointments[section][row].socketID {
+                socketInfo = socket
+            }
+        }
+        return String(socketInfo!.socketType!.rawValue)
+    }
+}
+extension String {
+    func convertDate() -> String{
+        var monthName = String()
+        if let monthNumber = Int(self.split(separator: "-")[1]) {
+            monthName = DateFormatter().monthSymbols[monthNumber - 1]
+        }
+        return "\(self.split(separator: "-")[2]) " + monthName + " \(self.split(separator: "-")[0])"
+    }
 }

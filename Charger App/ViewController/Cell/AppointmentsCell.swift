@@ -107,7 +107,11 @@ class AppointmentsCell: UITableViewCell {
             socketNumberLabel.leftAnchor.constraint(equalTo: socketNumberPlaceholderLabel.rightAnchor, constant: 5),
             socketNumberLabel.centerYAnchor.constraint(equalTo: lowerInfoContainerView.centerYAnchor),
             
-            alertImageView.heightAnchor.constraint(equalTo: alertLabel.heightAnchor),
+            socketTypeLabel.rightAnchor.constraint(equalTo: lowerInfoContainerView.rightAnchor, constant:  -15),
+            socketTypeLabel.centerYAnchor.constraint(equalTo: socketNumberLabel.centerYAnchor),
+            
+            alertImageView.heightAnchor.constraint(equalToConstant: 15),
+            alertImageView.widthAnchor.constraint(equalToConstant: 14),
             alertImageView.centerYAnchor.constraint(equalTo: alertLabel.centerYAnchor),
             alertImageView.rightAnchor.constraint(equalTo: alertLabel.leftAnchor, constant: -5),
             
@@ -159,6 +163,9 @@ class AppointmentsCell: UITableViewCell {
         
         socketNumberLabel.font = Theme.fontNormal(size: 15)
         socketNumberLabel.textColor = Theme.colorWhite()
+        
+        socketTypeLabel.font = Theme.fontNormal(size: 15)
+        socketTypeLabel.textColor = Theme.colorGrayscale()
         
         alertImageView.image = UIImage(systemName: "alarm")
         alertImageView.tintColor = Theme.colorGrayscale()

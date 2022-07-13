@@ -9,6 +9,9 @@ import UIKit
 
 class SelectCityViewController: UIViewController {
     
+    private let searchResultLabel = UILabel()
+    private let searchAgainLabel = UILabel()
+    
     private let searchBar = UISearchBar()
     private let tableView = UITableView()
     
@@ -34,6 +37,8 @@ class SelectCityViewController: UIViewController {
     private func setup() {
         view.addSubview(searchBar)
         view.addSubview(tableView)
+        view.addSubview(searchResultLabel)
+        view.addSubview(searchAgainLabel)
         tableView.register(CityTableViewCell.self, forCellReuseIdentifier: "cell")
     }
     
@@ -41,7 +46,9 @@ class SelectCityViewController: UIViewController {
     private func setupConstraints() {
         [
             searchBar,
-            tableView
+            tableView,
+            searchResultLabel,
+            searchAgainLabel
         ].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -51,6 +58,14 @@ class SelectCityViewController: UIViewController {
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             searchBar.leftAnchor.constraint(equalTo: view.leftAnchor),
             searchBar.rightAnchor.constraint(equalTo: view.rightAnchor),
+            
+            searchResultLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 150),
+            searchResultLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            searchResultLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            
+            searchAgainLabel.topAnchor.constraint(equalTo: searchResultLabel.bottomAnchor, constant: 20),
+            searchAgainLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+            searchAgainLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
             
             tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -80,12 +95,28 @@ class SelectCityViewController: UIViewController {
         searchBar.searchTextField.textColor = Theme.colorWhite()
         searchBar.autocapitalizationType = .none
         
+        searchResultLabel.text = "Aramanız ile eşleşen bir sonuç bulunamadı."
+        searchResultLabel.font = Theme.fontBold(size: 30)
+        searchResultLabel.numberOfLines = 0
+        searchResultLabel.textColor = Theme.colorWhite()
+        searchResultLabel.textAlignment = .center
+        
+        searchAgainLabel.text = "Lütfen yeni bir arama yapın."
+        searchAgainLabel.textColor = Theme.colorGrayscale()
+        searchAgainLabel.font = Theme.fontNormal(size: 15)
+        searchAgainLabel.numberOfLines = 0
+        searchAgainLabel.textAlignment = .center
+        
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .singleLine
         tableView.separatorColor = Theme.colorGrayscale()
         // clear head inset
         tableView.separatorInset = .zero
         tableView.rowHeight = 44
+        
+        searchResultLabel.isHidden = true
+        searchAgainLabel.isHidden = true
+        tableView.isHidden = false
         
     }
     func initViewModel() {
@@ -146,8 +177,14 @@ extension SelectCityViewController: UISearchBarDelegate {
         } else {
             if (selectCityViewModel.filteredCities.count == 0) {
                 searchBar.searchTextField.layer.borderColor = Theme.colorSecurityOn().cgColor
+                searchResultLabel.isHidden = false
+                searchAgainLabel.isHidden = false
+                tableView.isHidden = true
             } else {
                 searchBar.searchTextField.layer.borderColor = Theme.colorPrimary().cgColor
+                searchResultLabel.isHidden = true
+                searchAgainLabel.isHidden = true
+                tableView.isHidden = false
             }
         }
     }

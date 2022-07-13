@@ -72,6 +72,8 @@ class SelectDateAndSlotViewController: UIViewController {
     
     private let confirmButton = UIButton()
     
+    var selectedView: TimeLabelView? = nil
+    
     private let selectDateAndSlotViewModel: SelectDateAndSlotViewModel
     
     private var constraints: [NSLayoutConstraint] = []
@@ -296,7 +298,8 @@ class SelectDateAndSlotViewController: UIViewController {
         confirmButton.setTitle("TARİH VE SAATİ ONAYLA", for: .normal)
         confirmButton.titleLabel?.font = Theme.fontBold(size: 15)
         confirmButton.setTitleColor(Theme.darkColor(), for: .normal)
-        confirmButton.backgroundColor = Theme.colorWhite()
+        confirmButton.backgroundColor = Theme.colorCharcoalGrey()
+        confirmButton.isUserInteractionEnabled = false
         confirmButton.layer.cornerRadius = 20
     }
     
@@ -311,6 +314,8 @@ class SelectDateAndSlotViewController: UIViewController {
                 self?.datePickerLabel.text = self?.selectDateAndSlotViewModel.dateForDisplay
             }
             self.selectDateAndSlotViewModel.reFetchData = { [weak self] in
+                self?.confirmButton.backgroundColor = Theme.colorCharcoalGrey()
+                self?.confirmButton.isUserInteractionEnabled = false
                 self?.selectDateAndSlotViewModel.fetchAvaibleTimes()
             }
         }
@@ -336,8 +341,10 @@ class SelectDateAndSlotViewController: UIViewController {
                 item.enumerated().forEach { (index,bool) in
                     if(bool == true) {
                         timeClassArraySocket1[index].timeLabel.backgroundColor = .clear
+                        timeClassArraySocket1[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     } else {
                         timeClassArraySocket1[index].timeLabel.backgroundColor = Theme.colorCharcoalGrey()
+                        timeClassArraySocket1[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     }
                 }
             }
@@ -346,8 +353,10 @@ class SelectDateAndSlotViewController: UIViewController {
                 item.enumerated().forEach { (index,bool) in
                     if(bool == true) {
                         timeClassArraySocket2[index].timeLabel.backgroundColor = .clear
+                        timeClassArraySocket2[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     }else {
                         timeClassArraySocket2[index].timeLabel.backgroundColor = Theme.colorCharcoalGrey()
+                        timeClassArraySocket2[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     }
                 }
             }
@@ -356,9 +365,11 @@ class SelectDateAndSlotViewController: UIViewController {
                 item.enumerated().forEach { (index,bool) in
                     if(bool == true) {
                         timeClassArraySocket3[index].timeLabel.backgroundColor = .clear
+                        timeClassArraySocket3[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     }
                     else {
                         timeClassArraySocket3[index].timeLabel.backgroundColor = Theme.colorCharcoalGrey()
+                        timeClassArraySocket3[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     }
                 }
             }
@@ -375,30 +386,51 @@ class SelectDateAndSlotViewController: UIViewController {
 }
 extension SelectDateAndSlotViewController {
     @objc func viewInStack1Tapped(sender: UITapGestureRecognizer) {
+        confirmButton.backgroundColor = Theme.colorWhite()
+        confirmButton.isUserInteractionEnabled = true
         if let senderView = sender.view as? TimeLabelView {
+            if selectedView != nil {
+                selectedView?.timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
+                selectedView?.timeLabel.backgroundColor = Theme.colorCharcoalGrey()
+            }
             selectDateAndSlotViewModel.selectedTimeSlot = senderView.timeLabel.text!
             selectDateAndSlotViewModel.selectedSocketID = selectDateAndSlotViewModel.selectedStation.sockets![0].socketID!
             selectDateAndSlotViewModel.selectedSocketIndex = 0
             senderView.timeLabel.layer.borderColor = Theme.colorPrimary().cgColor
             senderView.timeLabel.backgroundColor = Theme.darkColor()
+            selectedView = senderView
         }
     }
     @objc func viewInStack2Tapped(sender: UITapGestureRecognizer) {
         if let senderView = sender.view as? TimeLabelView {
+            confirmButton.backgroundColor = Theme.colorWhite()
+            confirmButton.isUserInteractionEnabled = true
+            if selectedView != nil {
+                selectedView?.timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
+                selectedView?.timeLabel.backgroundColor = Theme.colorCharcoalGrey()
+            }
             selectDateAndSlotViewModel.selectedTimeSlot = senderView.timeLabel.text!
             selectDateAndSlotViewModel.selectedSocketID = selectDateAndSlotViewModel.selectedStation.sockets![1].socketID!
             selectDateAndSlotViewModel.selectedSocketIndex = 1
             senderView.timeLabel.layer.borderColor = Theme.colorPrimary().cgColor
             senderView.timeLabel.backgroundColor = Theme.darkColor()
+            selectedView = senderView
         }
     }
     @objc func viewInStack3Tapped(sender: UITapGestureRecognizer) {
         if let senderView = sender.view as? TimeLabelView {
+            confirmButton.backgroundColor = Theme.colorWhite()
+            confirmButton.isUserInteractionEnabled = true
+            if selectedView != nil {
+                selectedView?.timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
+                selectedView?.timeLabel.backgroundColor = Theme.colorCharcoalGrey()
+            }
             selectDateAndSlotViewModel.selectedTimeSlot = senderView.timeLabel.text!
             selectDateAndSlotViewModel.selectedSocketID = selectDateAndSlotViewModel.selectedStation.sockets![2].socketID!
             selectDateAndSlotViewModel.selectedSocketIndex = 2
             senderView.timeLabel.layer.borderColor = Theme.colorPrimary().cgColor
             senderView.timeLabel.backgroundColor = Theme.darkColor()
+            selectedView = senderView
         }
     }
 }

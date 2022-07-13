@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 
 class LoginViewModel {
     
@@ -14,7 +13,6 @@ class LoginViewModel {
     static let shared = LoginViewModel()
     
     var eMail: String?
-    let deviceID = UIDevice.current.identifierForVendor?.uuidString
     
     // E-mail check validity and save
     func saveMail(eMailTextField: String) -> Bool {
@@ -27,7 +25,7 @@ class LoginViewModel {
         
     }
     func fetchToken(completion: @escaping (Bool) -> () ) {
-        ChargerService.shared.fetchAccessToken(eMailAddress: eMail!, deviceUDID: deviceID ?? "",
+        ChargerService.shared.fetchAccessToken(eMailAddress: eMail!, deviceUDID: TokenManager.shared.deviceUDID,
                                             completion: { isSuccess in
             !isSuccess ? completion(false) : completion(true)
         })

@@ -10,6 +10,9 @@ import UIKit
 
 class SelectStationViewController: UIViewController {
     
+    private let searchResultLabel = UILabel()
+    private let searchAgainLabel = UILabel()
+    
     private let searchBar = UISearchBar()
     private let collectionView: UICollectionView = {
         let viewLayout = UICollectionViewFlowLayout()
@@ -23,7 +26,8 @@ class SelectStationViewController: UIViewController {
     
     private let selectStationViewModel: SelectStationViewModel
     
-    var constraints: [NSLayoutConstraint] = []
+    var collectionViewActiveConstraint: [NSLayoutConstraint] = []
+    var collectionViewDeactiveConstraint: [NSLayoutConstraint] = []
     
     init(viewModel: String) {
         // Create SelectStationViewModel with city info coming from
@@ -54,6 +58,8 @@ class SelectStationViewController: UIViewController {
         view.addSubview(collectionView)
         view.addSubview(resultLabel)
         view.addSubview(tableView)
+        view.addSubview(searchResultLabel)
+        view.addSubview(searchAgainLabel)
         collectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "collectionViewCell")
         tableView.register(FilterTableViewCell.self, forCellReuseIdentifier: "filterTableViewCell")
         
@@ -64,11 +70,13 @@ class SelectStationViewController: UIViewController {
             searchBar,
             collectionView,
             resultLabel,
-            tableView
+            tableView,
+            searchResultLabel,
+            searchAgainLabel
         ].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
-        constraints.append(contentsOf: [
+        collectionViewActiveConstraint.append(contentsOf: [
             
             searchBar.heightAnchor.constraint(equalToConstant: 44),
             searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
@@ -84,13 +92,50 @@ class SelectStationViewController: UIViewController {
             resultLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
             resultLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 10),
             
+            searchResultLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 150),
+            searchResultLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            searchResultLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            
+            searchAgainLabel.topAnchor.constraint(equalTo: searchResultLabel.bottomAnchor, constant: 20),
+            searchAgainLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+            searchAgainLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
+            
+            tableView.topAnchor.constraint(equalTo: resultLabel.bottomAnchor, constant: 15),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+            tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15)
+        ])
+        collectionViewDeactiveConstraint.append(contentsOf: [
+            
+            searchBar.heightAnchor.constraint(equalToConstant: 44),
+            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            searchBar.leftAnchor.constraint(equalTo: view.leftAnchor),
+            searchBar.rightAnchor.constraint(equalTo: view.rightAnchor),
+            
+            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
+            collectionView.heightAnchor.constraint(equalToConstant: 0),
+            collectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+            collectionView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            
+            resultLabel.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 15),
+            resultLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+            resultLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 10),
+            
+            searchResultLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 150),
+            searchResultLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            searchResultLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            
+            searchAgainLabel.topAnchor.constraint(equalTo: searchResultLabel.bottomAnchor, constant: 20),
+            searchAgainLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+            searchAgainLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
+            
             tableView.topAnchor.constraint(equalTo: resultLabel.bottomAnchor, constant: 15),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15)
         ])
         
-        NSLayoutConstraint.activate(constraints) // activates constraints array
+        NSLayoutConstraint.activate(collectionViewDeactiveConstraint) // activates constraints array
     }
     /// add gradient background layer to view
     private func setGradientBackground() {
@@ -127,9 +172,26 @@ class SelectStationViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
         
+        searchResultLabel.text = "Aramanız ile eşleşen bir sonuç bulunamadı."
+        searchResultLabel.font = Theme.fontBold(size: 30)
+        searchResultLabel.numberOfLines = 0
+        searchResultLabel.textColor = Theme.colorWhite()
+        searchResultLabel.textAlignment = .center
+        
+        searchAgainLabel.text = "Lütfen yeni bir arama yapın."
+        searchAgainLabel.textColor = Theme.colorGrayscale()
+        searchAgainLabel.font = Theme.fontNormal(size: 15)
+        searchAgainLabel.numberOfLines = 0
+        searchAgainLabel.textAlignment = .center
+        
         collectionView.frame = view.bounds
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
+        
+        searchResultLabel.isHidden = true
+        searchAgainLabel.isHidden = true
+        tableView.isHidden = false
+        
     }
     func initViewModel() {
         // Get stations data
@@ -147,6 +209,13 @@ class SelectStationViewController: UIViewController {
         DispatchQueue.main.async {
             self.selectStationViewModel.reloadCollectionView = { [weak self] in
                 self?.collectionView.reloadData()
+                if (self?.selectStationViewModel.collectionViewDataArray.count != 0) {
+                NSLayoutConstraint.deactivate(self!.collectionViewDeactiveConstraint)
+                NSLayoutConstraint.activate(self!.collectionViewActiveConstraint)
+                } else {
+                    NSLayoutConstraint.activate(self!.collectionViewDeactiveConstraint)
+                    NSLayoutConstraint.deactivate(self!.collectionViewActiveConstraint)
+                }
             }
         }
     }
@@ -206,8 +275,14 @@ extension SelectStationViewController: UISearchBarDelegate {
         } else {
             if (selectStationViewModel.filteredStations.count == 0) {
                 searchBar.searchTextField.layer.borderColor = Theme.colorSecurityOn().cgColor
+                searchResultLabel.isHidden = false
+                searchAgainLabel.isHidden = false
+                tableView.isHidden = true
             } else {
                 searchBar.searchTextField.layer.borderColor = Theme.colorPrimary().cgColor
+                searchResultLabel.isHidden = true
+                searchAgainLabel.isHidden = true
+                tableView.isHidden = false
             }
         }
     }
@@ -215,17 +290,19 @@ extension SelectStationViewController: UISearchBarDelegate {
 extension SelectStationViewController: UICollectionViewDelegate, UICollectionViewDataSource,
                                        UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return selectStationViewModel.filterArray.count
+        return selectStationViewModel.collectionViewDataArray.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell",
                                                       for: indexPath) as! FilterCollectionViewCell
-        cell.filterTitle.text = selectStationViewModel.filterArray[indexPath.row]
+        cell.filterTitle.text = selectStationViewModel.collectionViewDataArray[indexPath.row]
+        cell.cancelButton.tag = indexPath.row
+        cell.cancelButton.addTarget(self, action: #selector(filterCancelItemTapped(sender:)), for: .touchUpInside)
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let size = (selectStationViewModel.filterArray[indexPath.row] as NSString).size(withAttributes: [NSAttributedString.Key.font: Theme.fontNormal(size: 13)])
+        let size = (selectStationViewModel.collectionViewDataArray[indexPath.row] as NSString).size(withAttributes: [NSAttributedString.Key.font: Theme.fontNormal(size: 13)])
         return CGSize(width: size.width + 50, height: size.height + 15)
     }
 }
@@ -243,7 +320,7 @@ extension SelectStationViewController {
 }
 extension SelectStationViewController {
     @objc func filterButtonTapped() {
-        let filterVC = FilterViewController(viewModel: selectStationViewModel.filterArray)
+        let filterVC = FilterViewController(viewModel: selectStationViewModel.filterDataSender)
         filterVC.filterViewModel.delegate = self.selectStationViewModel
         navigationController?.pushViewController(filterVC, animated: true)
     }
@@ -264,6 +341,12 @@ extension SelectStationViewController {
             }
         }
         return "dc"
+    }
+}
+extension SelectStationViewController {
+    @objc func filterCancelItemTapped(sender: UIButton) {
+        selectStationViewModel.removeItem(item: selectStationViewModel.collectionViewDataArray[sender.tag])
+        selectStationViewModel.collectionViewDataArray.remove(at: sender.tag)
     }
 }
 

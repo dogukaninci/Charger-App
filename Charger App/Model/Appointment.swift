@@ -10,7 +10,7 @@ import Foundation
 // MARK: - Appointment
 struct Appointment: Codable {
     let time, date: String?
-    let stationClass: StationClass?
+    let station: StationClass?
     let stationCode, stationName: String?
     let userID, appointmentID, socketID: Int?
     let hasPassed: Bool?
