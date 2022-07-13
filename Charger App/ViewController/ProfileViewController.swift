@@ -132,10 +132,6 @@ class ProfileViewController: UIViewController {
         
         containerView.backgroundColor = Theme.navBarColor()
         containerView.layer.cornerRadius = 10
-//        containerView.layer.shadowColor = Theme.darkColor().cgColor
-//        containerView.layer.shadowOpacity = 1
-//        containerView.layer.shadowOffset = .zero
-//        containerView.layer.shadowRadius = 10
     }
 }
 extension ProfileViewController {

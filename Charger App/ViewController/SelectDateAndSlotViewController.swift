@@ -314,9 +314,16 @@ class SelectDateAndSlotViewController: UIViewController {
                 self?.datePickerLabel.text = self?.selectDateAndSlotViewModel.dateForDisplay
             }
             self.selectDateAndSlotViewModel.reFetchData = { [weak self] in
-                self?.confirmButton.backgroundColor = Theme.colorCharcoalGrey()
-                self?.confirmButton.isUserInteractionEnabled = false
-                self?.selectDateAndSlotViewModel.fetchAvaibleTimes()
+                if self!.isDateValid() {
+                    self?.confirmButton.backgroundColor = Theme.colorCharcoalGrey()
+                    self?.confirmButton.isUserInteractionEnabled = false
+                    self?.selectDateAndSlotViewModel.fetchAvaibleTimes()
+                } else {
+                    let invalidVC = InvalidDateViewController()
+                    invalidVC.modalPresentationStyle = .overCurrentContext
+                    invalidVC.buttonDelegate = self
+                    self?.present(invalidVC, animated: true)
+                }
             }
         }
     }
@@ -472,4 +479,30 @@ extension SelectDateAndSlotViewController {
                                                        appointmentDate: selectDateAndSlotViewModel.date)
         navigationController?.pushViewController(detailVC, animated: true)
     }
+}
+extension SelectDateAndSlotViewController {
+    private func isDateValid() -> Bool {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.current
+        dateFormatter.locale = NSLocale.current
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        if dateFormatter.date(from: selectDateAndSlotViewModel.date)!  < dateFormatter.date(from: dateFormatter.string(from: Date.now))!  {
+            return false
+        } else {
+            return true
+        }
+    }
+}
+extension SelectDateAndSlotViewController: InvalidVCProtocol {
+    func isEditButton(editButton: Bool) {
+        if editButton {
+            datePickerTapped(sender: UITapGestureRecognizer.init())
+        } else {
+            selectDateAndSlotViewModel.date = selectDateAndSlotViewModel.setDate(date: Date.now, format: .send)
+            selectDateAndSlotViewModel.dateForDisplay = selectDateAndSlotViewModel.setDate(date: Date.now, format: .display)
+            dismiss(animated: true)
+        }
+    }
+    
+    
 }

@@ -167,9 +167,12 @@ extension AppointmentDetailViewController {
 }
 extension AppointmentDetailViewController {
     @objc func confirmButtonTapped(sender: UIButton) {
-        appointmentDetailViewModel.sendAppointmentRequest { isSuccess in
+        appointmentDetailViewModel.sendAppointmentRequest { [weak self] isSuccess in
             if isSuccess {
                 NotificationCenter.default.post(name: NSNotification.Name("appointmentAdded"), object: nil)
+                let appointmentsVC = AppointmentsViewController()
+                appointmentsVC.modalPresentationStyle = .fullScreen
+                self?.navigationController?.pushViewController(appointmentsVC, animated: true)
             }
         }
     }

@@ -16,6 +16,7 @@ class DatePickerViewModel {
     var delegate: DateSendingDelegateProtocol? = nil
     
     var date = String()
+    var dateAll = Date()
     var dateForDisplay = String()
     
     deinit{

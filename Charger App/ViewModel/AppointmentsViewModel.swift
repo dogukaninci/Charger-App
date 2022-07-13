@@ -17,6 +17,9 @@ class AppointmentsViewModel {
     }
     // Closure for reload table view
     var reloadTableView: (() -> Void)?
+    
+    var buttonTag = Int()
+    
     /// Check Appointments
     func checkAppointments() {
         ChargerService.shared.checkAppointments { [weak self] appointments in

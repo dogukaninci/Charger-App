@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum DateFormat {
+    case display
+    case send
+}
+
 class SelectDateAndSlotViewModel {
     
     // Selected station
@@ -41,16 +46,10 @@ class SelectDateAndSlotViewModel {
     init(station: StationElement) {
         // Station info coming from SelectStationViewController
         self.selectedStation = station
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone.current
-        dateFormatter.locale = NSLocale.current
-        dateFormatter.dateFormat = "d MMM yyyy"
-        self.dateForDisplay = dateFormatter.string(from: Date.now)
-        let dateFormatter2 = DateFormatter()
-        dateFormatter2.timeZone = TimeZone.current
-        dateFormatter2.locale = NSLocale.current
-        dateFormatter2.dateFormat = "yyyy-MM-dd"
-        self.date = dateFormatter2.string(from: Date.now)
+
+        self.dateForDisplay = setDate(date: Date.now, format: .display)
+
+        self.date = setDate(date: Date.now, format: .send)
     }
     /// Fetch avaible times from Service
     func fetchAvaibleTimes() {
@@ -78,6 +77,24 @@ class SelectDateAndSlotViewModel {
             self.slots = allSlots
         }
     }
+    func setDate(date: Date, format: DateFormat) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.current
+        dateFormatter.locale = NSLocale.current
+        dateFormatter.dateFormat = "d MMM yyyy"
+        
+        let dateFormatter2 = DateFormatter()
+        dateFormatter2.timeZone = TimeZone.current
+        dateFormatter2.locale = NSLocale.current
+        dateFormatter2.dateFormat = "yyyy-MM-dd"
+        
+        if format == .display {
+            return dateFormatter.string(from: date)
+        } else {
+            return dateFormatter2.string(from: date)
+        }
+    }
+        
 }
 extension SelectDateAndSlotViewModel: DateSendingDelegateProtocol {
     func sendDataToSelectDateViewModel(date: String, dateForDisplay: String) {

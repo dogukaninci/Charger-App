@@ -273,13 +273,22 @@ extension AppointmentsViewController {
         return "dc"
     }
 }
-extension AppointmentsViewController {
-    @objc func deleteButtonTapped(sender: UIButton){
-        let buttonTag = sender.tag
-        appointmentsViewModel.deleteAppointment(appointmentNumber: buttonTag) { [weak self] isSuccess in
-            print(isSuccess)
-            self?.appointmentsViewModel.checkAppointments()
+extension AppointmentsViewController: CancelAppointmentVCProtocol {
+    func isCancelButton(cancelButton: Bool) {
+        if cancelButton {
+            appointmentsViewModel.deleteAppointment(appointmentNumber: appointmentsViewModel.buttonTag) { [weak self] isSuccess in
+                print(isSuccess)
+                self?.appointmentsViewModel.checkAppointments()
+            }
         }
+    }
+    
+    @objc func deleteButtonTapped(sender: UIButton){
+        appointmentsViewModel.buttonTag = sender.tag
+        let cancelAppointmentVC = CancelAppointmentViewController(appointment: appointmentsViewModel.appointments [0][appointmentsViewModel.buttonTag])
+        cancelAppointmentVC.modalPresentationStyle = .overCurrentContext
+        cancelAppointmentVC.buttonDelegate = self
+        present(cancelAppointmentVC, animated: true)
     }
 }
 extension AppointmentsViewController {
