@@ -59,7 +59,7 @@ class ProfileViewController: UIViewController {
             
             logo.widthAnchor.constraint(equalToConstant: 170),
             logo.heightAnchor.constraint(equalToConstant: 170),
-            logo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 70),
+            logo.bottomAnchor.constraint(equalTo: containerView.topAnchor, constant: -20),
             logo.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             containerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
@@ -80,7 +80,7 @@ class ProfileViewController: UIViewController {
             iDLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -15),
             
             logoutButton.heightAnchor.constraint(equalToConstant: 44),
-            logoutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            logoutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             logoutButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50),
             logoutButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50)
         ])
@@ -120,7 +120,7 @@ class ProfileViewController: UIViewController {
         
         iDLabel.text = TokenManager.shared.deviceUDID
         iDLabel.textColor = Theme.colorWhite()
-        iDLabel.font = Theme.fontBold(size: 11)
+        iDLabel.font = Theme.fontBold(size: 10)
         iDLabel.numberOfLines = 1
         iDLabel.textAlignment = .right
         

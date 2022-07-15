@@ -94,6 +94,9 @@ class SelectCityViewController: UIViewController {
         searchBar.searchTextField.layer.borderColor = Theme.colorWhite().cgColor
         searchBar.searchTextField.textColor = Theme.colorWhite()
         searchBar.autocapitalizationType = .none
+        searchBar.keyboardType = .alphabet
+        searchBar.returnKeyType = .done
+        searchBar.enablesReturnKeyAutomatically = false
         
         searchResultLabel.text = "Aramanız ile eşleşen bir sonuç bulunamadı."
         searchResultLabel.font = Theme.fontBold(size: 30)
@@ -151,6 +154,7 @@ extension SelectCityViewController: UITableViewDataSource, UITableViewDelegate {
         let myRange = NSRange(location: 0, length: searchTextCharCount)
         attrStri.addAttributes([NSAttributedString.Key.foregroundColor : Theme.colorWhite() as Any], range: myRange)
         cell.title.attributedText = attrStri
+        cell.selectionStyle = .none
 
         return cell
     }
@@ -187,5 +191,8 @@ extension SelectCityViewController: UISearchBarDelegate {
                 tableView.isHidden = false
             }
         }
+    }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }

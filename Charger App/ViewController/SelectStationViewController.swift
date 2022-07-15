@@ -252,7 +252,12 @@ extension SelectStationViewController: UITableViewDelegate, UITableViewDataSourc
         cell.avaibleTimeLabel.text = "24 Saat"
         cell.avaibleSocketNumberPlaceholderLabel.text = "Uygun soket sayısı:"
         cell.avaibleSocketNumberLabel.text = "\(selectStationViewModel.filteredStations[indexPath.row].socketCount! - (selectStationViewModel.filteredStations[indexPath.row].occupiedSocketCount!)) / \(selectStationViewModel.filteredStations[indexPath.row].socketCount!)"
-        cell.distanceLabel.text = String(format: "%.1f", selectStationViewModel.filteredStations[indexPath.row].distanceInKM ?? 0) + " km"
+        if LocationManager.shared.getLatitude() == nil {
+            cell.distanceLabel.text = ""
+        } else {
+            cell.distanceLabel.text = String(format: "%.1f", selectStationViewModel.filteredStations[indexPath.row].distanceInKM ?? 0) + " km"
+        }
+
         // Remove selection effect
         cell.selectionStyle = .none
         return cell

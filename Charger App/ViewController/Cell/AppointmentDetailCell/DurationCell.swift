@@ -12,6 +12,8 @@ class DurationCell: UITableViewCell {
     
     let durationLabel = UILabel()
     let iconView = UIImageView()
+    let bottomLine = CALayer()
+
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -22,8 +24,13 @@ class DurationCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     private func configure() {
+        
+        bottomLine.frame = CGRect(x: 15, y: self.frame.size.height - 1, width: self.frame.size.width + 5, height: 1)
+        bottomLine.backgroundColor = Theme.colorGrayscale().cgColor
+
         contentView.addSubview(durationLabel)
         contentView.addSubview(iconView)
+        contentView.layer.addSublayer(bottomLine)
         
         durationLabel.translatesAutoresizingMaskIntoConstraints = false
         iconView.translatesAutoresizingMaskIntoConstraints = false

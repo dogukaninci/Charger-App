@@ -39,8 +39,6 @@ class ChargerService {
     
     var session: Session?
     
-    var userLatitude = 39.925058
-    var userLongitude = 32.836860
     
     /// Post method for Login
     func fetchAccessToken(eMailAddress : String, deviceUDID: String, completion: @escaping (Bool) -> Void) {
@@ -119,8 +117,13 @@ class ChargerService {
         if let credintal = TokenManager.shared.getCredential() {
             let token = credintal.token!
             let userId = credintal.userID!
-            
-            let stationsUrl = URL(string: "\(stationsEndPoint)?userID=\(userId)&userLatitude=\(userLatitude)&userLongitude=\(userLongitude)")
+            let stationsUrl: URL!
+            if LocationManager.shared.getLatitude() == nil {
+                stationsUrl = URL(string: "\(stationsEndPoint)?userID=\(userId)")
+            } else {
+                stationsUrl = URL(string: "\(stationsEndPoint)?userID=\(userId)&userLatitude=\(LocationManager.shared.getLatitude()!)&userLongitude=\(LocationManager.shared.getLongitude()!)")
+            }
+
             
             let headers: HTTPHeaders = [
                 "Connection": "keep-alive",
@@ -194,7 +197,12 @@ class ChargerService {
             let token = credintal.token!
             let userId = credintal.userID!
             
-            let appointmentsUrl = URL(string: "\(checkAppointmentstEndPoint)/\(userId)?userLatitude=\(userLatitude)&userLongitude=\(userLongitude)")
+            let appointmentsUrl: URL!
+            if LocationManager.shared.getLatitude() == nil {
+                appointmentsUrl = URL(string: "\(checkAppointmentstEndPoint)/\(userId)")
+            } else {
+                appointmentsUrl = URL(string: "\(checkAppointmentstEndPoint)/\(userId)?userLatitude=\(LocationManager.shared.getLatitude()!)&userLongitude=\(LocationManager.shared.getLongitude()!)")
+            }
             
             let headers: HTTPHeaders = [
                 "Connection": "keep-alive",

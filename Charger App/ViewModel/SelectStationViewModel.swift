@@ -47,9 +47,17 @@ class SelectStationViewModel {
     /// Fetch Stations Array from Service
     func fetchStations() {
         ChargerService.shared.fetchStations { [weak self] stationsArray in
-            if let stations = stationsArray {
-                self?.stations = stations
-                self?.filterByCity(stations: stations)
+            if LocationManager.shared.getLatitude() != nil {
+                if let stations = stationsArray {
+                    let sortedStation = stations.sorted { $0.distanceInKM! < $1.distanceInKM! }
+                    self?.stations = sortedStation
+                    self?.filterByCity(stations: sortedStation)
+                }
+            } else {
+                if let stations = stationsArray {
+                    self?.stations = stations
+                    self?.filterByCity(stations: stations)
+                }
             }
         }
     }

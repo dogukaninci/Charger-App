@@ -16,6 +16,12 @@ class AppointmentDetailViewModel {
     var timeSlot = String()
     var socketID = Int()
     var placeholderArray: [[String]] = [[],[],[]]
+    var reloadTableView: (() -> Void)?
+    var notificationTime = "30 dakika önce" {
+        didSet {
+            reloadTableView?()
+        }
+    }
     
     init(station: StationElement, socketIndex: Int, timeSlot: String, appointmentDate: String) {
         // Station info coming from SelectDateAndSlotViewController
@@ -74,6 +80,17 @@ class AppointmentDetailViewModel {
         placeholderArray[2].append("Randevu Süresi")
         return "1 Saat"
     }
+    private func setNotification() {
+        placeholderArray[2].append("Bildirim Al")
+    }
+    func setupNotification() {
+        placeholderArray[2].append("")
+        reloadTableView?()
+    }
+    func clearNotification() {
+        placeholderArray[2].removeLast()
+        reloadTableView?()
+    }
     private func flatServiceArray(services: [Service]) -> String{
         var result = [String]()
         services.forEach { service in
@@ -102,11 +119,17 @@ class AppointmentDetailViewModel {
         thirdSection.append(getTime())
         thirdSection.append(getAppointmentDuration())
         cellText.append(thirdSection)
+        setNotification()
     }
     func sendAppointmentRequest(completion: @escaping (Bool) -> Void) {
         ChargerService.shared.sendAppointmentRequest(stationID: selectedStation.id!, socketID: socketID, timeSlot: timeSlot, appointmentDate: date) { isSuccess in
             completion(isSuccess)
         }
+    }
+}
+extension AppointmentDetailViewModel: DurationSendingDelegateProtocol {
+    func sendDataToAppointmentDetailViewModel(duration: String) {
+        self.notificationTime = duration
     }
 }
 

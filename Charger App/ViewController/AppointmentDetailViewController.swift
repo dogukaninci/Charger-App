@@ -34,6 +34,17 @@ class AppointmentDetailViewController: UIViewController {
         setGradientBackground()
         delegation()
         setNavigationBarItems()
+        initClosures()
+    }
+    func initClosures() {
+        DispatchQueue.main.async {
+            self.appointmentDetailViewModel.reloadTableView = { [weak self] in
+                self?.tableView.reloadData()
+                // Scroll down to end to see new cell
+                let index = IndexPath(row: (self?.tableView.numberOfRows(inSection: 2))! - 1, section: 2)
+                self?.tableView.scrollToRow(at: index, at: .bottom, animated: true)
+            }
+        }
     }
     /// Adds subviews to the AppointmentDetailViewController's view
     private func setup() {
@@ -117,42 +128,46 @@ extension AppointmentDetailViewController: UITableViewDelegate, UITableViewDataS
         return 50
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 5
-        } else if section == 1 {
-            return 4
-        } else {
-            return 4
-        }
+        appointmentDetailViewModel.placeholderArray[section].count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             if indexPath.row == 0 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "addressCell", for: indexPath) as! AddressCell
                 cell.addressLabel.text = appointmentDetailViewModel.cellText[indexPath.section][indexPath.row]
+                cell.selectionStyle = .none
                 return cell
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "otherCell", for: indexPath) as! OtherCell
                 cell.detailLabel.text = appointmentDetailViewModel.cellText[indexPath.section][indexPath.row]
                 cell.placeholderLabel.text = appointmentDetailViewModel.placeholderArray[indexPath.section][indexPath.row]
+                cell.selectionStyle = .none
                 return cell
             }
         } else if indexPath.section == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "otherCell", for: indexPath) as! OtherCell
             cell.detailLabel.text = appointmentDetailViewModel.cellText[indexPath.section][indexPath.row]
             cell.placeholderLabel.text = appointmentDetailViewModel.placeholderArray[indexPath.section][indexPath.row]
+            cell.selectionStyle = .none
             return cell
         } else {
             if indexPath.row < 3 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "otherCell", for: indexPath) as! OtherCell
                 cell.detailLabel.text = appointmentDetailViewModel.cellText[indexPath.section][indexPath.row]
                 cell.placeholderLabel.text = appointmentDetailViewModel.placeholderArray[indexPath.section][indexPath.row]
+                cell.selectionStyle = .none
                 return cell
             } else if indexPath.row == 3 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "notificationCell", for: indexPath) as! NotificationCell
+                cell.selectionStyle = .none
+                cell.placeholderLabel.text = appointmentDetailViewModel.placeholderArray[indexPath.section][indexPath.row]
+                cell.onOffSwitch.addTarget(self, action: #selector(switchValueDidChange(_:)), for: .valueChanged)
                 return cell
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "durationCell", for: indexPath) as! DurationCell
+                cell.selectionStyle = .none
+                cell.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(durationCellTapped)))
+                cell.durationLabel.text = appointmentDetailViewModel.notificationTime
                 return cell
             }
         }
@@ -196,8 +211,32 @@ extension AppointmentDetailViewController {
         
         navigationItem.titleView = stackView
         navigationController?.navigationBar.topItem?.backButtonDisplayMode = .minimal
-
+        
     }
 }
-
+extension AppointmentDetailViewController {
+    @objc func switchValueDidChange(_ sender: UISwitch) {
+        if sender.isOn {
+            appointmentDetailViewModel.setupNotification()
+        } else {
+            appointmentDetailViewModel.clearNotification()
+        }
+    }
+}
+extension AppointmentDetailViewController {
+    func scrollToBottom()  {
+            let point = CGPoint(x: 0, y: self.tableView.contentSize.height + self.tableView.contentInset.bottom - self.tableView.frame.height)
+            if point.y >= 0{
+                self.tableView.setContentOffset(point, animated: true)
+            }
+        }
+}
+extension AppointmentDetailViewController {
+    @objc func durationCellTapped() {
+        let durationPickerVC = DurationPickerViewController()
+        durationPickerVC.modalPresentationStyle = .pageSheet
+        durationPickerVC.durationPickerViewModel.delegate = self.appointmentDetailViewModel
+        navigationController?.pushViewController(durationPickerVC, animated: true)
+    }
+}
 

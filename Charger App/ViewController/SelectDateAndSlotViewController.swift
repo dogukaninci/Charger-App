@@ -498,9 +498,8 @@ extension SelectDateAndSlotViewController: InvalidVCProtocol {
         if editButton {
             datePickerTapped(sender: UITapGestureRecognizer.init())
         } else {
-            selectDateAndSlotViewModel.date = selectDateAndSlotViewModel.setDate(date: Date.now, format: .send)
             selectDateAndSlotViewModel.dateForDisplay = selectDateAndSlotViewModel.setDate(date: Date.now, format: .display)
-            dismiss(animated: true)
+            selectDateAndSlotViewModel.date = selectDateAndSlotViewModel.setDate(date: Date.now, format: .send)
         }
     }
     
