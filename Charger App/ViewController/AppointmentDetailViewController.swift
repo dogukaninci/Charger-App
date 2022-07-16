@@ -167,7 +167,7 @@ extension AppointmentDetailViewController: UITableViewDelegate, UITableViewDataS
                 let cell = tableView.dequeueReusableCell(withIdentifier: "durationCell", for: indexPath) as! DurationCell
                 cell.selectionStyle = .none
                 cell.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(durationCellTapped)))
-                cell.durationLabel.text = appointmentDetailViewModel.notificationTime
+                cell.durationLabel.text = "30 dakika önce"
                 return cell
             }
         }
@@ -184,6 +184,10 @@ extension AppointmentDetailViewController {
     @objc func confirmButtonTapped(sender: UIButton) {
         appointmentDetailViewModel.sendAppointmentRequest { [weak self] isSuccess in
             if isSuccess {
+                if self?.appointmentDetailViewModel.placeholderArray[2].last == "" {
+                    self?.appointmentDetailViewModel.createNotification()
+                }
+                // NotificationCenter post to notify the AppointmentsViewController page
                 NotificationCenter.default.post(name: NSNotification.Name("appointmentAdded"), object: nil)
                 let appointmentsVC = AppointmentsViewController()
                 appointmentsVC.modalPresentationStyle = .fullScreen

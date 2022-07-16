@@ -132,4 +132,35 @@ extension AppointmentDetailViewModel: DurationSendingDelegateProtocol {
         self.notificationTime = duration
     }
 }
+extension AppointmentDetailViewModel {
+    func createNotification() {
+        let notificationManager = NotificationManager()
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.current
+        dateFormatter.locale = NSLocale.current
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let appointmentDate = dateFormatter.date(from: date + " \(timeSlot):00")!
+        let notificationDate: Date!
+
+        var calendar = Calendar.current
+        calendar.timeZone = TimeZone.current
+        calendar.locale = NSLocale.current
+        
+        if notificationTime.split(separator: " ")[1] == "dakika" {
+            notificationDate = calendar.date(byAdding: .minute, value: -Int(notificationTime.split(separator: " ")[0])!, to: appointmentDate)!
+        } else {
+            notificationDate = calendar.date(byAdding: .hour, value: -Int(notificationTime.split(separator: " ")[0])!, to: appointmentDate)!
+        }
+        let firstString = String(notificationTime.split(separator: " ")[0])
+        let secondString = String(notificationTime.split(separator: " ")[1])
+        
+        let body = "\(selectedStation.stationName!) istasyonu için oluşturduğunuz randevunuza \(firstString) \(secondString) kaldı."
+        notificationManager.createContent(body: body)
+        notificationManager.createTrigger(trigDate: notificationDate)
+        let id = String(selectedStation.stationName!) + "&" + String(socketID) + "&" + date + "&" + timeSlot + "&" + notificationTime
+        notificationManager.createReguest(date: notificationDate, id: id)
+        notificationManager.addNotification()
+    }
+}
 

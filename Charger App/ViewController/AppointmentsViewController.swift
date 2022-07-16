@@ -85,7 +85,7 @@ class AppointmentsViewController: UIViewController {
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
             
             createButton.heightAnchor.constraint(equalToConstant: 44),
-            createButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            createButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             createButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50),
             createButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50)
         ])
@@ -135,12 +135,13 @@ class AppointmentsViewController: UIViewController {
         createButton.layer.cornerRadius = 20
     }
     func initViewModel() {
-        // Get stations data
-        appointmentsViewModel.checkAppointments()
+        // Get notifications than stations 
+        appointmentsViewModel.getLocalNotifications()
         
         // Reload TableView closure
         DispatchQueue.main.async {
             self.appointmentsViewModel.reloadTableView = { [weak self] in
+                self?.appointmentsViewModel.getNotificationTime()
                 self?.tableView.reloadData()
                 if (self?.appointmentsViewModel.appointments[0].count != 0 || self?.appointmentsViewModel.appointments[1].count != 0 ) {
                     self?.tableView.isHidden = false
@@ -218,7 +219,7 @@ extension AppointmentsViewController: UITableViewDelegate, UITableViewDataSource
             cell.powerLabel.isHidden = true
             cell.alertLabel.isHidden = false
             cell.alertImageView.isHidden = false
-            cell.alertLabel.text = "30 dk. önce"
+            cell.alertLabel.text = appointmentsViewModel.notificationString[indexPath.row]
             cell.socketNumberPlaceholderLabel.text = "Soket Numarası:"
             cell.socketNumberLabel.text = String(appointmentsViewModel.findSocketInfo(section: indexPath.section, row: indexPath.row).socketNumber!)
             cell.deleteButton.addTarget(self, action: #selector(deleteButtonTapped(sender:)), for: .touchUpInside)
@@ -278,12 +279,14 @@ extension AppointmentsViewController: CancelAppointmentVCProtocol {
         if cancelButton {
             appointmentsViewModel.deleteAppointment(appointmentNumber: appointmentsViewModel.buttonTag) { [weak self] isSuccess in
                 print(isSuccess)
-                self?.appointmentsViewModel.checkAppointments()
+                self?.appointmentsViewModel.getLocalNotifications()
             }
         }
     }
     
     @objc func deleteButtonTapped(sender: UIButton){
+        appointmentsViewModel.deleteNotification(row: sender.tag)
+        
         appointmentsViewModel.buttonTag = sender.tag
         let cancelAppointmentVC = CancelAppointmentViewController(appointment: appointmentsViewModel.appointments [0][appointmentsViewModel.buttonTag])
         cancelAppointmentVC.modalPresentationStyle = .overCurrentContext

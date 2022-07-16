@@ -40,6 +40,7 @@ class DurationCell: UITableViewCell {
         durationLabel.textAlignment = .left
         
         iconView.image = UIImage(systemName: "chevron.down")
+        iconView.tintColor = Theme.colorWhite()
         
         backgroundColor = Theme.colorCharcoalGrey()
         

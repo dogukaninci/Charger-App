@@ -152,28 +152,28 @@ class AppointmentsCell: UITableViewCell {
         lowerInfoContainerView.layer.shadowRadius = 15
         lowerInfoContainerView.layer.cornerRadius = 5
         
-        dateLabel.font = Theme.fontNormal(size: 15)
+        dateLabel.font = Theme.fontNormal(size: 14)
         dateLabel.textColor = Theme.colorWhite()
         
-        timeLabel.font = Theme.fontNormal(size: 15)
+        timeLabel.font = Theme.fontNormal(size: 14)
         timeLabel.textColor = Theme.colorWhite()
         
-        socketNumberPlaceholderLabel.font = Theme.fontNormal(size: 15)
+        socketNumberPlaceholderLabel.font = Theme.fontNormal(size: 14)
         socketNumberPlaceholderLabel.textColor = Theme.colorGrayscale()
         
-        socketNumberLabel.font = Theme.fontNormal(size: 15)
+        socketNumberLabel.font = Theme.fontNormal(size: 14)
         socketNumberLabel.textColor = Theme.colorWhite()
         
-        socketTypeLabel.font = Theme.fontNormal(size: 15)
+        socketTypeLabel.font = Theme.fontNormal(size: 14)
         socketTypeLabel.textColor = Theme.colorGrayscale()
         
         alertImageView.image = UIImage(systemName: "alarm")
         alertImageView.tintColor = Theme.colorGrayscale()
         
-        alertLabel.font = Theme.fontNormal(size: 15)
+        alertLabel.font = Theme.fontNormal(size: 14)
         alertLabel.textColor = Theme.colorWhite()
         
-        powerLabel.font = Theme.fontNormal(size: 15)
+        powerLabel.font = Theme.fontNormal(size: 14)
         powerLabel.textColor = Theme.colorGrayscale()
         
         allContainerView.backgroundColor = Theme.colorCharcoalGrey()

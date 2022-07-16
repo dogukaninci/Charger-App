@@ -7,9 +7,10 @@
 
 import UIKit
 import CoreLocation
+import UserNotifications
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
     var locationManager = LocationManager()
@@ -18,6 +19,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
+        
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { success, _ in
+            guard success else { return }
+            print("Success in ANS registry")
+        }
         
         let loginVC = LoginViewController()
         let navViewController = UINavigationController(rootViewController: loginVC)
