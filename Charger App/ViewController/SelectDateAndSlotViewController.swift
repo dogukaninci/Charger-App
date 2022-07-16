@@ -347,9 +347,11 @@ class SelectDateAndSlotViewController: UIViewController {
                 type1Label.text = "\(selectDateAndSlotViewModel.selectedStation.sockets![0].chargeType!) * \(selectDateAndSlotViewModel.selectedStation.sockets![0].socketType!)"
                 item.enumerated().forEach { (index,bool) in
                     if(bool == true) {
+                        timeClassArraySocket1[index].isUserInteractionEnabled = false
                         timeClassArraySocket1[index].timeLabel.backgroundColor = .clear
                         timeClassArraySocket1[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     } else {
+                        timeClassArraySocket1[index].isUserInteractionEnabled = true
                         timeClassArraySocket1[index].timeLabel.backgroundColor = Theme.colorCharcoalGrey()
                         timeClassArraySocket1[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     }
@@ -359,9 +361,11 @@ class SelectDateAndSlotViewController: UIViewController {
                 type2Label.text = "\(selectDateAndSlotViewModel.selectedStation.sockets![1].chargeType!) * \(selectDateAndSlotViewModel.selectedStation.sockets![1].socketType!)"
                 item.enumerated().forEach { (index,bool) in
                     if(bool == true) {
+                        timeClassArraySocket2[index].isUserInteractionEnabled = false
                         timeClassArraySocket2[index].timeLabel.backgroundColor = .clear
                         timeClassArraySocket2[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     }else {
+                        timeClassArraySocket2[index].isUserInteractionEnabled = true
                         timeClassArraySocket2[index].timeLabel.backgroundColor = Theme.colorCharcoalGrey()
                         timeClassArraySocket2[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     }
@@ -371,10 +375,12 @@ class SelectDateAndSlotViewController: UIViewController {
                 type3Label.text = "\(selectDateAndSlotViewModel.selectedStation.sockets![2].chargeType!) * \(selectDateAndSlotViewModel.selectedStation.sockets![2].socketType!)"
                 item.enumerated().forEach { (index,bool) in
                     if(bool == true) {
+                        timeClassArraySocket3[index].isUserInteractionEnabled = false
                         timeClassArraySocket3[index].timeLabel.backgroundColor = .clear
                         timeClassArraySocket3[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     }
                     else {
+                        timeClassArraySocket3[index].isUserInteractionEnabled = true
                         timeClassArraySocket3[index].timeLabel.backgroundColor = Theme.colorCharcoalGrey()
                         timeClassArraySocket3[index].timeLabel.layer.borderColor = Theme.colorCharcoalGrey().cgColor
                     }

@@ -69,6 +69,7 @@ class FilterViewController: UIViewController {
         setupConstraints()
         style()
         setGradientBackground()
+        setNavigationBarItems()
     }
     /// Adds subviews to the FilterViewController view
     private func setup() {
@@ -342,5 +343,29 @@ extension FilterViewController {
 extension FilterViewController {
     @objc func filterTapped(sender: UIButton) {
         navigationController?.popViewController(animated: true)
+    }
+}
+extension FilterViewController {
+    /// Sets Navigation Bar styles and items
+    private func setNavigationBarItems() {
+        navigationItem.title = "Filtreleme"
+        let clearButton = UIBarButtonItem(title: "TEMİZLE", style: .plain, target: self, action: #selector(clearButtonTapped))
+        navigationItem.rightBarButtonItem = clearButton
+    }
+}
+extension FilterViewController {
+    @objc func clearButtonTapped() {
+        filterViewModel.filterDataSender.chargeTypesArrSelectedIndex.removeAll()
+        filterViewModel.filterDataSender.chargeTypesArrSelectedData.removeAll()
+        filterViewModel.filterDataSender.socketTypesArrSelectedIndex.removeAll()
+        filterViewModel.filterDataSender.socketTypesArrSelectedData.removeAll()
+        filterViewModel.filterDataSender.serviceTypesArrSelectedIndex.removeAll()
+        filterViewModel.filterDataSender.serviceTypesArrSelectedData.removeAll()
+        filterViewModel.filterDataSender.sliderValue = 15
+        slideBar.value = 15
+        chargeTypeCollectionView.reloadData()
+        socketTypeCollectionView.reloadData()
+        servicesCollectionView.reloadData()
+        
     }
 }

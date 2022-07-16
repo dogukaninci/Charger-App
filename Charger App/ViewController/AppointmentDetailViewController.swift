@@ -167,7 +167,7 @@ extension AppointmentDetailViewController: UITableViewDelegate, UITableViewDataS
                 let cell = tableView.dequeueReusableCell(withIdentifier: "durationCell", for: indexPath) as! DurationCell
                 cell.selectionStyle = .none
                 cell.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(durationCellTapped)))
-                cell.durationLabel.text = "30 dakika önce"
+                cell.durationLabel.text = appointmentDetailViewModel.notificationTime
                 return cell
             }
         }

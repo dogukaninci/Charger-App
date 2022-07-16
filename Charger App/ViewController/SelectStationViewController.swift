@@ -158,6 +158,9 @@ class SelectStationViewController: UIViewController {
         searchBar.searchTextField.backgroundColor = Theme.darkColor()
         searchBar.autocapitalizationType = .none
         searchBar.searchTextField.clipsToBounds = true
+        searchBar.keyboardType = .alphabet
+        searchBar.returnKeyType = .done
+        searchBar.enablesReturnKeyAutomatically = false
         
         resultLabel.textColor = Theme.colorWhite()
         resultLabel.textAlignment = .left
@@ -346,6 +349,9 @@ extension SelectStationViewController {
             }
         }
         return "dc"
+    }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }
 extension SelectStationViewController {
