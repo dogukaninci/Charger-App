@@ -17,7 +17,7 @@ Arçelik A.Ş. is a Turkish multinational household appliances manufacturer.
 </h5>
 <br>
 
-<h5 align="left"> - To install the application, it is sufficient to clone the project and install the Alomofire library using swift package manager.
+<h5 align="left"> - To install the application, it is sufficient to clone the project and install the Alomofire library using swift package manager (if not automatically downloaded by Xcode).
 </h5>
 <br>
 
