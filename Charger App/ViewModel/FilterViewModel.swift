@@ -19,21 +19,6 @@ class FilterViewModel {
     init(filtered: FilterDataSender) {
         // Filtered data info coming from SelectStationViewController
         self.filterDataSender = filtered
-        
-//        filterArray.forEach { element in
-//            if chargeTypesArrData.contains(element) {
-//                chargeTypesArrSelectedData.append(element)
-//                chargeTypesArrSelectedIndex.append(chargeTypesArrData.firstIndex(of: element)!)
-//            }
-//            if socketTypesArrData.contains(element) {
-//                socketTypesArrSelectedData.append(element)
-//                socketTypesArrSelectedIndex.append(socketTypesArrData.firstIndex(of: element)!)
-//            }
-//            if serviceTypesArrData.contains(element) {
-//                serviceTypesArrSelectedData.append(element)
-//                serviceTypesArrSelectedIndex.append(serviceTypesArrData.firstIndex(of: element)!)
-//            }
-//        }
     }
     
     deinit{

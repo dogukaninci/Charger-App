@@ -100,6 +100,9 @@ extension SelectStationViewModel: FilteringInfoSendingDelegateProtocol {
         filterDataSender.serviceTypesArrSelectedData.forEach { str in
             collectionViewDataArray.append(str)
         }
+        if filterDataSender.sliderValue < 15 {
+            collectionViewDataArray.append(String(filterDataSender.sliderValue))
+        }
         
         makeFilterTableView()
     }
@@ -128,10 +131,20 @@ extension SelectStationViewModel {
                 }).count > 0
             }
         }
+        filteredStations = filteredStations.filter({ element in
+            if element.distanceInKM != nil && filterDataSender.sliderValue < 15 {
+                return Float(element.distanceInKM!) < filterDataSender.sliderValue
+            } else {
+                return true
+            }
+        })
     }
 }
 extension SelectStationViewModel {
     func removeItem(item: String) {
+        if item == String(filterDataSender.sliderValue) {
+            filterDataSender.sliderValue = 15
+        }
         if filterDataSender.chargeTypesArrSelectedData.contains(item) {
             let index = filterDataSender.chargeTypesArrSelectedData.firstIndex(of: item)
             filterDataSender.chargeTypesArrSelectedData.remove(at: index!)

@@ -198,7 +198,7 @@ class FilterViewController: UIViewController {
         slideBar.isContinuous = false
         slideBar.minimumValue = 0
         slideBar.maximumValue = 15
-        slideBar.value = 15
+        slideBar.value = filterViewModel.filterDataSender.sliderValue
         slideBar.tintColor = Theme.colorPrimary()
         
         sliderValue1.text = "3"
