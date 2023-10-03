@@ -4,7 +4,7 @@ align="center">
   <img src="https://user-images.githubusercontent.com/38799123/179360206-263c6742-4d7e-4acc-8bfd-5ecfbf94be91.png" width="100">
 <br>
 <br>
-Project-ChargerApp </h1>
+ChargerApp </h1>
 
 <h5 align="left"> 
 <br>
